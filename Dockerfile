@@ -21,4 +21,4 @@ EXPOSE 3306
 EXPOSE 80
 
 RUN chmod +x /root/start-script.sh
-CMD /root/start-script.sh
+CMD ["/bin/bash", "/root/start-script.sh"]
