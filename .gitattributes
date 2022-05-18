@@ -1,0 +1,2 @@
+# Remets le comportement par défaut, au cas où les utilisateurs n'ont pas mis core.autocrlf.
+* text=auto
