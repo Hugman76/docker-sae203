@@ -18,6 +18,9 @@ COPY ./java/server /java
 EXPOSE 3306
 EXPOSE 80
 
+RUN service mariadb start
+RUN mysql < /data/create_db.sql
+
 # Déplacement dans le dossier java
 WORKDIR /java
 # On trouve puis compile tous les fichiers Java
