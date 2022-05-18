@@ -1,16 +1,27 @@
-# 🗿 Meilleur docker du monde
+# 🗿 Juegos
 
-Ce dépôt contient le docker le plus incroyable au monde
+Ce dépôt contient un docker qui lance un serveur multijoueur pour jouer à plusieurs mini-jeux.
+
+## 🎮 Jeux disponibles
+- Puissance 4
+- Morpion
+- Jeu des dames
 
 ## ⚙️ Usage
 
+### Serveur
+
 - Construction du conteneur :
 ```shell
-docker build -t meilleur-docker .
+docker build -t juegos .
 ```
 - Lancer le service :
 ```shell
-docker run -p 8000:80 meilleur-docker
+docker run -d -p 8000:80 juegos
 ```
 
-- Vérifier que l'application est en cours d'exécution. Pour ce faire, ouvrez un navigateur et tapez ```localhost:8000/index.php```
+La console devrait prévenir que le serveur est démarré.
+
+### Clients
+
+// En construction //
