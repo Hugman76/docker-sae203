@@ -11,6 +11,7 @@ RUN mkdir /data
 RUN mkdir /java
 
 # Copie des fichiers
+COPY ./start-script.sh /root/
 COPY ./data /data
 COPY ./java/server /java
 
@@ -18,8 +19,8 @@ COPY ./java/server /java
 EXPOSE 3306
 EXPOSE 80
 
-RUN service mariadb start
-RUN mysql < /data/create_db.sql
+CMD ["service", "mariadb", "start"]
+CMD ["mysql", "<", "/data/create_db.sql"]
 
 # Déplacement dans le dossier java
 WORKDIR /java
@@ -27,4 +28,4 @@ WORKDIR /java
 RUN find -name "*.java" > sources.txt
 RUN javac @sources.txt -encoding UTF-8
 
-CMD ["java", "JuegosServer"]
+CMD ["java", "-cp", "./lib/mariadb-connector.jar:.", "JuegosServer"]
