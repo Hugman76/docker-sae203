@@ -3,8 +3,8 @@ FROM debian:latest
 RUN apt-get update && \
     apt-get -y install  \
     apache2 \
-    mariadb-juegos.server \
-    mariadb-juegos.client \
+    mariadb-server \
+    mariadb-client \
     default-jdk
 
 RUN mkdir /data
