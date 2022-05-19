@@ -1,4 +1,4 @@
-package morpion.metier;
+package juegos.client.morpion.metier;
 
 import java.util.Arrays;
 
