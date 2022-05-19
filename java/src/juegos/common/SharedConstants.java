@@ -2,7 +2,7 @@ package juegos.common;
 
 public class SharedConstants
 {
-	public static final int DEFAULT_PORT = 9000;
+	public static final int DEFAULT_PORT = 8000;
 
 	public static final String OK = "OK";
 	public static final String NO = "NO";

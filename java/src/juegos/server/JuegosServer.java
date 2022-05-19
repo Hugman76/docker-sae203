@@ -43,8 +43,8 @@ public class JuegosServer
 		// Créer le serveur
 		this.spaces = new ArrayList<>();
 		this.lobby = new LobbyServerSpace();
-		try(ServerSocket serverSocket = new ServerSocket(port)) {
-			System.out.println("Serveur démarré !\nEn attente de connexions...");
+		try(ServerSocket serverSocket = new ServerSocket(SharedConstants.DEFAULT_PORT)) {
+			System.out.println("Serveur démarré sur le port "+ serverSocket.getLocalPort() +" !\nEn attente de connexions...");
 			// Accueillir les clients
 			while(true) {
 				this.startNewThread(serverSocket.accept());
