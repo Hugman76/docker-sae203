@@ -13,4 +13,6 @@ CREATE TABLE menu_items (
 INSERT INTO menu_items (name, details, price) VALUES ('BBQ Bacon Burger', 'I love barbeque bbq burgers', 5.0);
 INSERT INTO menu_items (name, details, price) VALUES ('Sandwich manese', 'stek, formage', 19.0);
 
-GRANT ALL ON menu.* to review_site@localhost IDENTIFIED BY 'JxSLRkdutW';
+CREATE USER 'sae'@'%' IDENTIFIED BY 'sae';
+GRANT ALL PRIVILEGES ON *.* TO 'sae'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
