@@ -20,7 +20,7 @@ EXPOSE 3306
 EXPOSE 80
 
 #Configuration de l'environnement CLASSPATH
-ADD     ./java/server/mysql-connector.jar /srv/app/mysql-connector.jar
+ADD     ./java/lib/mysql-connector.jar /srv/app/mysql-connector.jar
 ENV CLASSPATH=/srv/app/mysql-connector.jar:${CLASSPATH}
 
 #Ajout des droits d'execution pour le script de démarrage
