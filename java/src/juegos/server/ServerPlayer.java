@@ -11,8 +11,8 @@ import java.net.Socket;
 
 public class ServerPlayer
 {
-	private PrintWriter out;
-	private BufferedReader in;
+	private final PrintWriter out;
+	private final BufferedReader in;
 
 	public ServerPlayer(Socket socket) throws IOException {
 		out = new PrintWriter(socket.getOutputStream(), true);

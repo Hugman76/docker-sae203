@@ -5,7 +5,7 @@ RUN apt-get update && \
     apache2 \
     mariadb-server \
     mariadb-client \
-    default-jdk
+    openjdk-17-jdk
 
 RUN mkdir /data
 RUN mkdir /java

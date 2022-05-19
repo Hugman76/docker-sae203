@@ -1,6 +1,5 @@
 package juegos.server;
 
-import juegos.client.JuegosClient;
 import juegos.common.SharedConstants;
 import juegos.server.space.LobbyServerSpace;
 import juegos.server.space.ServerSpace;
@@ -24,22 +23,6 @@ public class JuegosServer
 		INSTANCE.start(SharedConstants.DEFAULT_PORT);
 	}
 
-	public void start(int port) {
-		// Créer le serveur
-		this.spaces = new ArrayList<>();
-		this.lobby = new LobbyServerSpace();
-		try (ServerSocket serverSocket = new ServerSocket(port)) {
-			System.out.println("Serveur démarré !\nEn attente de connexions...");
-			// Accueillir les clients
-			while (true) {
-				this.startNewThread(serverSocket.accept());
-			}
-		} catch (IOException e) {
-			System.err.println("Impossible de créer le serveur : " + e);
-			System.exit(1);
-		}
-	}
-
 	public static ServerSpace getLobby() {
 		return INSTANCE.lobby;
 	}
@@ -54,6 +37,22 @@ public class JuegosServer
 			players.addAll(space.getPlayers());
 		}
 		return players;
+	}
+
+	public void start(int port) {
+		// Créer le serveur
+		this.spaces = new ArrayList<>();
+		this.lobby = new LobbyServerSpace();
+		try(ServerSocket serverSocket = new ServerSocket(port)) {
+			System.out.println("Serveur démarré !\nEn attente de connexions...");
+			// Accueillir les clients
+			while(true) {
+				this.startNewThread(serverSocket.accept());
+			}
+		} catch(IOException e) {
+			System.err.println("Impossible de créer le serveur : " + e);
+			System.exit(1);
+		}
 	}
 
 	public void startNewThread(Socket socket) {
