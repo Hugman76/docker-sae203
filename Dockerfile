@@ -19,13 +19,19 @@ COPY ./java/server /java
 EXPOSE 3306
 EXPOSE 80
 
-CMD ["service", "mariadb", "start"]
-CMD ["mysql", "<", "/data/create_db.sql"]
+#Configuration de l'environnement CLASSPATH
+ADD     ./java/server/mysql-connector.jar /srv/app/mysql-connector.jar
+ENV CLASSPATH=/srv/app/mysql-connector.jar:${CLASSPATH}
+
+#Ajout des droits d'execution pour le script de démarrage
+RUN chmod +x /root/start-script.sh 
 
 # Déplacement dans le dossier java
 WORKDIR /java
+
 # On trouve puis compile tous les fichiers Java
 RUN find -name "*.java" > sources.txt
 RUN javac @sources.txt -encoding UTF-8
 
-CMD ["java", "-cp", "./lib/mariadb-connector.jar:.", "JuegosServer"]
+#Configuration de la commande d'execution
+CMD ["/bin/bash", "/root/start-script.sh"]
