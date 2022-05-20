@@ -19,6 +19,7 @@ COPY java/src/juegos/server java/src/juegos/server
 # Exposer Apache
 EXPOSE 3306
 EXPOSE 80
+EXPOSE 8000
 
 #Configuration de l'environnement CLASSPATH
 ADD java/lib/mysql-connector.jar /srv/app/mysql-connector.jar
