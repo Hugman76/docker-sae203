@@ -17,7 +17,7 @@ docker build -t juegos .
 ```
 - Lancer le service :
 ```shell
-docker run -d -p 8000:80 juegos
+docker run -d -p 8000:8000 juegos
 ```
 
 La console devrait prévenir que le serveur est démarré.
