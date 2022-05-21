@@ -11,6 +11,6 @@ public class TestClientSpace extends ClientSpace
 	}
 
 	@Override
-	public void discuss() {
+	public void tick() {
 	}
 }

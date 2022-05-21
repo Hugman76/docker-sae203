@@ -42,7 +42,7 @@ public class JuegosServer
 		this.spaces = new ArrayList<>();
 		this.spaces.add(new LobbyServerSpace());
 		try(ServerSocket serverSocket = new ServerSocket(port)) {
-			System.out.println("Serveur démarré sur le port "+ serverSocket.getLocalPort() +" !\nEn attente de connexions...");
+			System.out.println("Serveur démarré sur le port " + serverSocket.getLocalPort() + " !\nEn attente de connexions...");
 			// Accueillir les clients
 			while(true) {
 				this.startNewThread(serverSocket.accept());
@@ -59,8 +59,7 @@ public class JuegosServer
 			player.join(ServerSpaceType.LOBBY);
 			System.out.println("Nouveau client connecté !");
 			new Thread(() -> {
-				String msg = player.read();
-				if(msg != null) {
+				while(true) {
 					player.getSpace().handleCommunication(player);
 				}
 			}).start();

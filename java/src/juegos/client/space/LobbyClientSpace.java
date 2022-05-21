@@ -2,8 +2,6 @@ package juegos.client.space;
 
 import juegos.client.ui.LobbyFrame;
 
-import java.io.IOException;
-
 public class LobbyClientSpace extends ClientSpace
 {
 	private final LobbyFrame frame;
@@ -13,6 +11,6 @@ public class LobbyClientSpace extends ClientSpace
 	}
 
 	@Override
-	public void discuss() throws IOException {
+	public void tick() {
 	}
 }

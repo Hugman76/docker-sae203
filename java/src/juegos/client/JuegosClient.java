@@ -2,7 +2,6 @@ package juegos.client;
 
 import juegos.client.space.ClientSpace;
 import juegos.client.space.ClientSpaceType;
-import juegos.client.space.LobbyClientSpace;
 import juegos.common.SharedConstants;
 
 import java.io.BufferedReader;
@@ -13,8 +12,6 @@ import java.net.Socket;
 
 public class JuegosClient
 {
-	private static final boolean DEBUG = false;
-
 	public static final JuegosClient INSTANCE = new JuegosClient();
 
 	public PrintWriter writer;
@@ -28,16 +25,18 @@ public class JuegosClient
 	public void start() {
 		// Créer le serveur
 		SharedConstants.info("Connexion au serveur...");
-		try (Socket toServer = new Socket("localhost", SharedConstants.DEFAULT_PORT)) {
-			SharedConstants.info("Connexion établie !");
+		try(Socket toServer = new Socket("localhost", SharedConstants.DEFAULT_PORT)) {
 			this.writer = new PrintWriter(toServer.getOutputStream(), true);
 			this.reader = new BufferedReader(new InputStreamReader(toServer.getInputStream()));
-			this.space = new LobbyClientSpace();
+			if(SharedConstants.OK.equals(read())) {
+				SharedConstants.info("Connexion établie !");
+				this.space = ClientSpaceType.LOBBY.create();
 
-			while(true) {
-				this.space.discuss();
+				while(true) {
+					this.space.tick();
+				}
 			}
-		} catch (IOException e) {
+		} catch(IOException e) {
 			SharedConstants.error("Impossible de créer le serveur : " + e);
 			System.exit(1);
 		}
@@ -63,10 +62,10 @@ public class JuegosClient
 	}
 
 	public static boolean moveTo(ClientSpaceType spaceType) {
-		send(spaceType.id());
+		send(spaceType.getId());
 		String reply = read();
 		if(SharedConstants.OK.equals(reply)) {
-			INSTANCE.space = spaceType.spaceSupplier().get();
+			INSTANCE.space = spaceType.create();
 			return true;
 		}
 		return false;

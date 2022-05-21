@@ -5,12 +5,10 @@ import juegos.client.space.ClientSpaceType;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
 public class LobbyFrame extends JFrame
 {
-	public LobbyFrame()
-	{
+	public LobbyFrame() {
 		// Éléments
 		JButton btnTest = new JButton("Test");
 		JPanel pnlMain = new JPanel();

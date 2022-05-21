@@ -1,21 +1,18 @@
 package juegos.client.ui;
 
 import juegos.client.JuegosClient;
-import juegos.client.space.ClientSpaceType;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
 public class TestFrame extends JFrame
 {
-	private JLabel lblTest;
+	private final JLabel lblTest;
 
-	public TestFrame()
-	{
+	public TestFrame() {
 		// Éléments
 		JButton btnTest = new JButton("Envoie un truc");
-		lblTest = new JLabel("TEST?");
+		lblTest = new JLabel("TEST !");
 		JPanel pnlMain = new JPanel();
 
 		// Paramétrages fonctionnels
