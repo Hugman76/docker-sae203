@@ -39,6 +39,10 @@ public class ClientSpaceType
 		return id;
 	}
 
+	public String getName() {
+		return id.replace('_', ' ').toUpperCase();
+	}
+
 	public ClientSpace create() {
 		return spaceSupplier.get();
 	}

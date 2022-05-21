@@ -29,6 +29,9 @@ public class JuegosServer
 		return INSTANCE.spaces;
 	}
 
+	/**
+	 * @return la liste des joueurs connectés au serveur.
+	 */
 	public static List<ServerPlayer> getPlayers() {
 		List<ServerPlayer> players = new ArrayList<>();
 		for(ServerSpace space : INSTANCE.spaces) {
@@ -42,30 +45,29 @@ public class JuegosServer
 		this.spaces = new ArrayList<>();
 		this.spaces.add(new LobbyServerSpace());
 		try(ServerSocket serverSocket = new ServerSocket(port)) {
-			System.out.println("Serveur démarré sur le port " + serverSocket.getLocalPort() + " !\nEn attente de connexions...");
+			SharedConstants.info("Serveur démarré sur le port " + serverSocket.getLocalPort() + " !\nEn attente de connexions...");
 			// Accueillir les clients
 			while(true) {
 				this.startNewThread(serverSocket.accept());
 			}
 		} catch(IOException e) {
-			System.err.println("Impossible de créer le serveur : " + e);
-			System.exit(1);
+			throw new RuntimeException("Impossible de créer le serveur : ", e);
 		}
 	}
 
 	private void startNewThread(Socket socket) {
+		SharedConstants.info("Nouveau client connecté !");
 		try {
 			ServerPlayer player = new ServerPlayer(socket);
 			player.join(ServerSpaceType.LOBBY);
-			System.out.println("Nouveau client connecté !");
+			SharedConstants.info(player + " a rejoint le lobby.");
 			new Thread(() -> {
 				while(true) {
 					player.getSpace().handleCommunication(player);
 				}
 			}).start();
 		} catch(IOException e) {
-			System.err.println("Impossible de lire/écrire sur le socket : " + e);
-			throw new RuntimeException(e);
+			throw new RuntimeException("Impossible de lire/écrire sur le socket : ", e);
 		}
 	}
 }

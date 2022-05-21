@@ -20,17 +20,24 @@ public class ServerPlayer
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	}
 
+	/**
+	 * Attend et lit le prochain message envoyé par le client du joueur.
+	 */
 	public String read() {
 		try {
 			String msg = in.readLine();
 			SharedConstants.debug("Lecture de " + this + " : " + msg);
 			return msg;
 		} catch(IOException e) {
+			this.getSpace().handleDisconnection(this);
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void send(String msg) {
+	/**
+	 * Envoie un message au client du joueur.
+	 */
+	public void write(String msg) {
 		SharedConstants.debug("Envoi à " + this + " : " + msg);
 		out.println(msg);
 	}
@@ -53,20 +60,28 @@ public class ServerPlayer
 		}
 	}
 
+	/**
+	 * Méthode privée qui fait rejoindre un joueur à un espace dont on est sûr existe déjà.
+	 * @see #join(ServerSpaceType)
+	 * @return vrai si le joueur a pu rejoindre l'espace.
+	 */
 	private boolean join(ServerSpace space) {
 		SharedConstants.debug(this + " essaye de rejoindre " + space.toString() + " depuis " + getSpace());
 		if(space.canAccept(this)) {
 			if(this.getSpace() != null) this.getSpace().getPlayers().remove(this);
 			space.getPlayers().add(this);
-			this.send(SharedConstants.OK);
+			this.write(SharedConstants.OK);
 			return true;
 		}
 		else {
-			this.send(SharedConstants.NO);
+			this.write(SharedConstants.NO);
 			return false;
 		}
 	}
 
+	/**
+	 * @return l'espace auquel le joueur est rattaché.
+	 */
 	public ServerSpace getSpace() {
 		for(ServerSpace space : JuegosServer.getSpaces()) {
 			if(space.getPlayers().contains(this)) return space;
@@ -74,7 +89,10 @@ public class ServerPlayer
 		return null;
 	}
 
+	/**
+	 * @return vrai si le joueur est dans un espace qui est un jeu.
+	 */
 	public boolean isInGame() {
-		return getSpace() != JuegosServer.getLobby();
+		return getSpace().getType() != ServerSpaceType.LOBBY;
 	}
 }

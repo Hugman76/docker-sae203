@@ -24,14 +24,15 @@ public class TestServerSpace extends ServerSpace
 	public void talkTo(ServerPlayer player) {
 		String msg = player.read();
 		if("get?".equals(msg)) {
-			player.send("TEST:" + this.randomString(4));
-			this.talkTo(player);
+			player.write("TEST:" + this.randomString(4));
 		}
 		else {
 			ServerSpaceType type = ServerSpaceType.getById(msg);
 			if(type != null) {
 				player.join(type);
-				this.destroy();
+				if(this.getPlayers().isEmpty()) {
+					this.destroy(player);
+				}
 			}
 		}
 	}

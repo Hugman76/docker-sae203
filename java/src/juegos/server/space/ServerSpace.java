@@ -6,6 +6,16 @@ import juegos.server.ServerPlayer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Cette classe représente un espace sur le serveur.<br>
+ * Par exemple - et par défaut - un espace est alloué au lobby, accueillant des joueurs à l'infini.
+ * Un autre espace peut-être dédié à un jeu, qui peut accueillir maximum 2 joueurs, etc.<br>
+ * Un espace contient son type ({@link ServerSpaceType}) et une liste de joueurs.
+ * Il est nécessaire également de posséder un équivalent de cet espace du côté client, et de gérer la communication entre les deux.
+ *
+ * @see ServerSpaceType
+ * @see juegos.client.space.ClientSpace
+ */
 public abstract class ServerSpace
 {
 	private final ServerSpaceType type;
@@ -24,23 +34,47 @@ public abstract class ServerSpace
 
 
 	/**
-	 * Execute un programme entre le client et le serveur.
-	 * ATTENTION ! Cette méthode est appelée par un thread séparé.
+	 * Execute un algorithme qui sert à la communication entre le client et le serveur.<br><br>
+	 * <strong>ATTENTION ! Cette méthode est appelée par un thread séparé.</strong><br>
+	 * Cela veut notamment dire que ce code pourra être execute plusieurs fois dans au même moment, mais peut-être pas aux mêmes endroits de l'algorithme.
+	 * Il est donc TRES important de synchroniser les appels des méthodes {@link ServerPlayer#read} et {@link ServerPlayer#write} avec l'espace client équivalent.
+	 * @see ServerPlayer#read
+	 * @see ServerPlayer#write
+	 *
+	 * @param player le joueur avec lequel on communique
 	 */
 	abstract public void handleCommunication(ServerPlayer player);
 
 	/**
-	 * Retourne la liste des joueurs de cet espace.
+	 * Execute un algorithme qui sera exécuté lorsqu'un joueur se déconnecte. Après l'exécution de cet algorithme, le joueur sera retiré complètement du serveur.
+	 * @param player le joueur qui vient de se déconnecter
+	 */
+	public void handleDisconnection(ServerPlayer player) {
+		this.destroy(player);
+	}
+
+	/**
+	 * @return la liste des joueurs de cet espace.
 	 */
 	public List<ServerPlayer> getPlayers() {
 		return players;
 	}
 
 	/**
-	 * Renvoie les joueurs au lobby, puis détruit cet espace.
+	 * Déplace les joueurs au lobby, puis détruit cet espace.
+	 * @param player le joueur qui a causé la destruction de cet espace. On le retire de la liste des joueurs à rediriger, car il se trouve sûrement déjà autre part.
 	 */
-	public void destroy() {
-		this.getPlayers().forEach(player -> player.join(ServerSpaceType.LOBBY));
+	public void destroy(ServerPlayer player) {
+		this.destroy(player, ServerSpaceType.LOBBY);
+	}
+
+	/**
+	 * Déplace les joueurs à un autre espace, puis détruit cet espace.
+	 * @param player le joueur qui a causé la destruction de cet espace. On le retire de la liste des joueurs à rediriger, car il se trouve sûrement déjà autre part.
+	 * @param fallbackType le type d'espace vers lequel rediriger les joueurs
+	 */
+	public void destroy(ServerPlayer player, ServerSpaceType fallbackType) {
+		this.getPlayers().stream().filter(serverPlayer -> serverPlayer != player).forEach(player2 -> player2.join(fallbackType));
 		JuegosServer.getSpaces().remove(this);
 	}
 

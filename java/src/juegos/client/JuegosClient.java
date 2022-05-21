@@ -4,6 +4,7 @@ import juegos.client.space.ClientSpace;
 import juegos.client.space.ClientSpaceType;
 import juegos.common.SharedConstants;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,14 +15,34 @@ public class JuegosClient
 {
 	public static final JuegosClient INSTANCE = new JuegosClient();
 
+	public final JFrame frame;
+
 	public PrintWriter writer;
 	public BufferedReader reader;
 	public ClientSpace space;
+
+	public JuegosClient() {
+		frame = new JFrame("Juegos");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(800, 600);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+	}
 
 	public static void main(String[] args) {
 		INSTANCE.start();
 	}
 
+	/**
+	 * @return la fenêtre du client.
+	 */
+	public static JFrame getFrame() {
+		return INSTANCE.frame;
+	}
+
+	/**
+	 * Démarre le client.
+	 */
 	public void start() {
 		// Créer le serveur
 		SharedConstants.info("Connexion au serveur...");
@@ -30,7 +51,7 @@ public class JuegosClient
 			this.reader = new BufferedReader(new InputStreamReader(toServer.getInputStream()));
 			if(SharedConstants.OK.equals(read())) {
 				SharedConstants.info("Connexion établie !");
-				this.space = ClientSpaceType.LOBBY.create();
+				moveTo(ClientSpaceType.LOBBY);
 
 				while(true) {
 					this.space.tick();
@@ -42,10 +63,24 @@ public class JuegosClient
 		}
 	}
 
+	/**
+	 * @return l'espace actuel du client.
+	 */
 	public static ClientSpace getSpace() {
 		return INSTANCE.space;
 	}
 
+	/**
+	 * Envoie un message au serveur.
+	 */
+	public static void write(String msg) {
+		SharedConstants.debug("Envoi de : " + msg);
+		INSTANCE.writer.println(msg);
+	}
+
+	/**
+	 * Attend et lit le prochain message du serveur.
+	 */
 	public static String read() {
 		try {
 			SharedConstants.debug("Lecture...");
@@ -56,16 +91,24 @@ public class JuegosClient
 		}
 	}
 
-	public static void send(String msg) {
-		SharedConstants.debug("Envoi de : " + msg);
-		INSTANCE.writer.println(msg);
-	}
-
+	/**
+	 * Déplace le joueur vers le type d'espace demandé.
+	 * Il est important de noter que le client DEMANDE bien au serveur, et que le serveur doit lui répondre.
+	 * @return si le joueur a pu se déplacer.
+	 */
 	public static boolean moveTo(ClientSpaceType spaceType) {
-		send(spaceType.getId());
+		write(spaceType.getId());
 		String reply = read();
 		if(SharedConstants.OK.equals(reply)) {
 			INSTANCE.space = spaceType.create();
+			JuegosClient.getFrame().setTitle(spaceType.getName());
+			getFrame().getContentPane().removeAll();
+			JPanel panel = new JPanel();
+			getSpace().createUI(panel);
+
+			getFrame().add(panel);
+			getFrame().validate();
+			getFrame().repaint();
 			return true;
 		}
 		return false;
