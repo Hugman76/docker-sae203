@@ -50,4 +50,12 @@ public abstract class ServerSpace
 	public ServerSpaceType getType() {
 		return type;
 	}
+
+	@Override
+	public String toString() {
+		return "ServerSpace{" +
+				"type=" + type +
+				", players=" + players +
+				'}';
+	}
 }

@@ -22,24 +22,27 @@ public class ServerPlayer
 
 	public String read() {
 		try {
-			SharedConstants.debug("Lecture de " + this + "...");
-			return in.readLine();
+			String msg = in.readLine();
+			SharedConstants.debug("Lecture de " + this + " : " + msg);
+			return msg;
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public void send(String msg) {
-		SharedConstants.debug("Envoi à " + this + ": " + msg);
+		SharedConstants.debug("Envoi à " + this + " : " + msg);
 		out.println(msg);
 	}
 
 	/**
 	 * Place un joueur dans le premier espace du type demandé qui est disponible, et qu'il peut rejoindre.
 	 * Si aucun espace est disponible, alors un nouvel espace est créé.
+	 *
 	 * @param spaceType le type d'espace dans lequel le joueur doit être placé
 	 */
 	public void join(ServerSpaceType spaceType) {
+		if(spaceType == null) throw new IllegalArgumentException("spaceType ne peut pas être null");
 		ServerSpace space = null;
 		for(ServerSpace s : JuegosServer.getSpaces()) {
 			if(s.getType().equals(spaceType) && s.canAccept(this)) space = s;
@@ -51,6 +54,7 @@ public class ServerPlayer
 	}
 
 	private boolean join(ServerSpace space) {
+		SharedConstants.debug(this + " essaye de rejoindre " + space.toString() + " depuis " + getSpace());
 		if(space.canAccept(this)) {
 			if(this.getSpace() != null) this.getSpace().getPlayers().remove(this);
 			space.getPlayers().add(this);

@@ -15,6 +15,7 @@ public class LobbyServerSpace extends ServerSpace
 
 	@Override
 	public void handleCommunication(ServerPlayer player) {
-		player.join(ServerSpaceType.getById(player.read()));
+		ServerSpaceType type = ServerSpaceType.getById(player.read());
+		player.join(type);
 	}
 }
