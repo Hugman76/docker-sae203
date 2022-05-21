@@ -2,28 +2,35 @@ package juegos.server.space;
 
 import juegos.server.ServerPlayer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 public class TestServerSpace extends ServerSpace
 {
+	public TestServerSpace() {
+		super(ServerSpaceType.TEST);
+	}
+
 	@Override
-	public boolean canJoin(ServerPlayer player) {
+	public boolean canAccept(ServerPlayer player) {
 		return true;
 	}
 
 	@Override
-	public void discuss(ServerPlayer player, PrintWriter out, BufferedReader in) throws IOException {
+	public void handleCommunication(ServerPlayer player) {
+		this.talkTo(player);
+	}
+
+	public void talkTo(ServerPlayer player) {
 		String msg = player.read();
-		if("get?".equals(msg))
+		if("get?".equals(msg)) {
 			player.send("TEST:" + this.randomString(4));
+			this.talkTo(player);
+		}
 		else {
 			ServerSpaceType type = ServerSpaceType.getById(msg);
 			if(type != null) {
-				player.moveTo(type.spaceSupplier().get());
+				player.join(type);
 				this.destroy();
 			}
 		}

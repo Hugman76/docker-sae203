@@ -1,7 +1,6 @@
 package juegos.client.space;
 
 import juegos.common.SharedConstants;
-import juegos.server.space.ServerSpaceType;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;

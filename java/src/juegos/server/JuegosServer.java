@@ -3,6 +3,7 @@ package juegos.server;
 import juegos.common.SharedConstants;
 import juegos.server.space.LobbyServerSpace;
 import juegos.server.space.ServerSpace;
+import juegos.server.space.ServerSpaceType;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -14,17 +15,14 @@ public class JuegosServer
 {
 	public static final JuegosServer INSTANCE = new JuegosServer();
 
-	private static final boolean DEBUG = false;
-
 	private List<ServerSpace> spaces;
-	private ServerSpace lobby;
 
 	public static void main(String[] args) {
 		INSTANCE.start(SharedConstants.DEFAULT_PORT);
 	}
 
 	public static ServerSpace getLobby() {
-		return INSTANCE.lobby;
+		return INSTANCE.spaces.get(0);
 	}
 
 	public static List<ServerSpace> getSpaces() {
@@ -39,11 +37,11 @@ public class JuegosServer
 		return players;
 	}
 
-	public void start(int port) {
+	private void start(int port) {
 		// Créer le serveur
 		this.spaces = new ArrayList<>();
-		this.lobby = new LobbyServerSpace();
-		try(ServerSocket serverSocket = new ServerSocket(SharedConstants.DEFAULT_PORT)) {
+		this.spaces.add(new LobbyServerSpace());
+		try(ServerSocket serverSocket = new ServerSocket(port)) {
 			System.out.println("Serveur démarré sur le port "+ serverSocket.getLocalPort() +" !\nEn attente de connexions...");
 			// Accueillir les clients
 			while(true) {
@@ -55,20 +53,20 @@ public class JuegosServer
 		}
 	}
 
-	public void startNewThread(Socket socket) {
-		new Thread(() -> {
-			try {
-				ServerPlayer player = new ServerPlayer(socket);
-				JuegosServer.getLobby().getPlayers().add(player);
-				System.out.println("Nouveau client connecté !");
-
-				while(true) {
-					player.discuss();
+	private void startNewThread(Socket socket) {
+		try {
+			ServerPlayer player = new ServerPlayer(socket);
+			player.join(ServerSpaceType.LOBBY);
+			System.out.println("Nouveau client connecté !");
+			new Thread(() -> {
+				String msg = player.read();
+				if(msg != null) {
+					player.getSpace().handleCommunication(player);
 				}
-			} catch(IOException e) {
-				System.err.println("Impossible de lire/écrire sur le socket : " + e);
-				throw new RuntimeException(e);
-			}
-		}).start();
+			}).start();
+		} catch(IOException e) {
+			System.err.println("Impossible de lire/écrire sur le socket : " + e);
+			throw new RuntimeException(e);
+		}
 	}
 }

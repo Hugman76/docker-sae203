@@ -3,17 +3,16 @@ package juegos.server.space;
 import juegos.server.JuegosServer;
 import juegos.server.ServerPlayer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ServerSpace
 {
+	private final ServerSpaceType type;
 	private final List<ServerPlayer> players;
 
-	public ServerSpace() {
+	public ServerSpace(ServerSpaceType type) {
+		this.type = type;
 		this.players = new ArrayList<>();
 		JuegosServer.getSpaces().add(this);
 	}
@@ -21,7 +20,14 @@ public abstract class ServerSpace
 	/**
 	 * Retourne si le joueur peut rejoindre cet espace.
 	 */
-	abstract public boolean canJoin(ServerPlayer player);
+	abstract public boolean canAccept(ServerPlayer player);
+
+
+	/**
+	 * Execute un programme entre le client et le serveur.
+	 * ATTENTION ! Cette méthode est appelée par un thread séparé.
+	 */
+	abstract public void handleCommunication(ServerPlayer player);
 
 	/**
 	 * Retourne la liste des joueurs de cet espace.
@@ -34,9 +40,14 @@ public abstract class ServerSpace
 	 * Renvoie les joueurs au lobby, puis détruit cet espace.
 	 */
 	public void destroy() {
-		this.getPlayers().forEach(player -> player.moveTo(JuegosServer.getLobby()));
+		this.getPlayers().forEach(player -> player.join(ServerSpaceType.LOBBY));
 		JuegosServer.getSpaces().remove(this);
 	}
 
-	abstract public void discuss(ServerPlayer player, PrintWriter out, BufferedReader in) throws IOException;
+	/**
+	 * Retourne le type de cet espace.
+	 */
+	public ServerSpaceType getType() {
+		return type;
+	}
 }
