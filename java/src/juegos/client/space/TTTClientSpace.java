@@ -1,6 +1,7 @@
 package juegos.client.space;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class TTTClientSpace extends ClientSpace
 {
@@ -30,6 +31,8 @@ public class TTTClientSpace extends ClientSpace
 		for(int lig = 0; lig < this.tabBtnCase.length; lig++)
 			for(int col = 0; col < this.tabBtnCase.length; col++)
 				panel.add(this.tabBtnCase[lig][col]);
+
+		panel.setLayout(new GridLayout(3, 3));
 
 		return panel;
 	}

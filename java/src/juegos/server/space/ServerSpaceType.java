@@ -11,6 +11,7 @@ public class ServerSpaceType
 
 	public static final ServerSpaceType LOBBY = register(SharedConstants.LOBBY, LobbyServerSpace::new);
 	public static final ServerSpaceType TEST = register(SharedConstants.TEST, TestServerSpace::new);
+	public static final ServerSpaceType TIC_TAC_TOE = register(SharedConstants.TIC_TAC_TOE, TTTServerSpace::new);
 
 	private final String id;
 	private final Supplier<ServerSpace> supplier;
