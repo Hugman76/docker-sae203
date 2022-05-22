@@ -9,7 +9,9 @@ public class SharedConstants
 {
 	public static final String DEFAULT_HOST = "localhost";
 	public static final int DEFAULT_PORT = 8000;
-	/** Cette variable est utilisée pour envoyer plus d'informations utiles au développement dans les logs. */
+	/**
+	 * Cette variable est utilisée pour envoyer plus d'informations utiles au développement dans les logs.
+	 */
 	public static final boolean DEBUG = true;
 
 	public static final String OK = "OK";
@@ -17,11 +19,17 @@ public class SharedConstants
 
 	public static final String LOBBY = "lobby";
 	public static final String TEST = "test";
-	/** Puissance 4 */
+	/**
+	 * Puissance 4
+	 */
 	public static final String CONNECT_FOUR = "connect_four";
-	/** Morpion */
+	/**
+	 * Morpion
+	 */
 	public static final String TIC_TAC_TOE = "tic_tac_toe";
-	/** Uno */
+	/**
+	 * Uno
+	 */
 	public static final String UNO = "U";
 
 	public static void info(String s) {

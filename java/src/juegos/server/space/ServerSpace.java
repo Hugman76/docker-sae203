@@ -38,15 +38,17 @@ public abstract class ServerSpace
 	 * <strong>ATTENTION ! Cette méthode est appelée par un thread séparé.</strong><br>
 	 * Cela veut notamment dire que ce code pourra être execute plusieurs fois dans au même moment, mais peut-être pas aux mêmes endroits de l'algorithme.
 	 * Il est donc TRES important de synchroniser les appels des méthodes {@link ServerPlayer#read} et {@link ServerPlayer#write} avec l'espace client équivalent.
-	 * @see ServerPlayer#read
-	 * @see ServerPlayer#write
 	 *
 	 * @param player le joueur avec lequel on communique
+	 *
+	 * @see ServerPlayer#read
+	 * @see ServerPlayer#write
 	 */
 	abstract public void handleCommunication(ServerPlayer player);
 
 	/**
 	 * Execute un algorithme qui sera exécuté lorsqu'un joueur se déconnecte. Après l'exécution de cet algorithme, le joueur sera retiré complètement du serveur.
+	 *
 	 * @param player le joueur qui vient de se déconnecter
 	 */
 	public void handleDisconnection(ServerPlayer player) {
@@ -62,6 +64,7 @@ public abstract class ServerSpace
 
 	/**
 	 * Déplace les joueurs au lobby, puis détruit cet espace.
+	 *
 	 * @param player le joueur qui a causé la destruction de cet espace. On le retire de la liste des joueurs à rediriger, car il se trouve sûrement déjà autre part.
 	 */
 	public void destroy(ServerPlayer player) {
@@ -70,7 +73,8 @@ public abstract class ServerSpace
 
 	/**
 	 * Déplace les joueurs à un autre espace, puis détruit cet espace.
-	 * @param player le joueur qui a causé la destruction de cet espace. On le retire de la liste des joueurs à rediriger, car il se trouve sûrement déjà autre part.
+	 *
+	 * @param player       le joueur qui a causé la destruction de cet espace. On le retire de la liste des joueurs à rediriger, car il se trouve sûrement déjà autre part.
 	 * @param fallbackType le type d'espace vers lequel rediriger les joueurs
 	 */
 	public void destroy(ServerPlayer player, ServerSpaceType fallbackType) {

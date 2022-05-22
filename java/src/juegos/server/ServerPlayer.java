@@ -71,8 +71,9 @@ public class ServerPlayer
 
 	/**
 	 * Méthode privée qui fait rejoindre un joueur à un espace dont on est sûr existe déjà.
-	 * @see #join(ServerSpaceType)
+	 *
 	 * @return vrai si le joueur a pu rejoindre l'espace.
+	 * @see #join(ServerSpaceType)
 	 */
 	private boolean join(ServerSpace space) {
 		SharedConstants.debug(this + " essaye de rejoindre " + space.toString() + " depuis " + getSpace());

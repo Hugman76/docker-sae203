@@ -1,7 +1,6 @@
 package juegos.client.space;
 
 import juegos.client.JuegosClient;
-import juegos.common.SharedConstants;
 
 import javax.swing.*;
 import java.awt.*;

@@ -161,8 +161,7 @@ public class JuegosClient
 
 			try {
 				JuegosClient.connect(username, host, port);
-			}
-			catch(Exception ex) {
+			} catch(Exception ex) {
 				JOptionPane.showMessageDialog(null, "Connexion impossible. Veuillez réessayer ou utiliser une adresse différente.", "Échec de la connexion", JOptionPane.ERROR_MESSAGE);
 			}
 		});

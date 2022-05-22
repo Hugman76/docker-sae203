@@ -14,7 +14,7 @@ import javax.swing.*;
  */
 public abstract class ClientSpace
 {
-	private ClientSpaceType type;
+	private final ClientSpaceType type;
 
 	public ClientSpace(ClientSpaceType type) {
 		this.type = type;

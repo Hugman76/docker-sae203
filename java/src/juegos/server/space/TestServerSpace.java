@@ -2,7 +2,6 @@ package juegos.server.space;
 
 import juegos.server.ServerPlayer;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 public class TestServerSpace extends ServerSpace
