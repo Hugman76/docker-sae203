@@ -24,6 +24,12 @@ public abstract class ClientSpace
 		return type;
 	}
 
+	/**
+	 * Méthode déclenchée lorsque le client reçoit une commande du type {@link juegos.common.CommandType#SPACE} du serveur, tandis que le client est dans cet espace.
+	 * Les arguments peuvent être n'importe quoi, tant qu'ils correspondent bien à ce que le serveur attend.
+	 *
+	 * @param args arguments de la commande
+	 */
 	abstract public void handleCommand(String[] args);
 
 	/**

@@ -4,6 +4,9 @@ package juegos.common;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Une commande représente un message envoyé du serveur à un client, ou inversement.
+ */
 public class Command
 {
 	public static final Command QUIT = CommandType.INFO.create("quit");

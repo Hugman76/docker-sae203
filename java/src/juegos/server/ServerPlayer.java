@@ -61,6 +61,7 @@ public class ServerPlayer
 		}
 		else if(Command.QUIT.equals(command)) {
 			this.getSpace().handleDisconnection(this);
+			JuegosServer.getPlayers().remove(this);
 		}
 	}
 

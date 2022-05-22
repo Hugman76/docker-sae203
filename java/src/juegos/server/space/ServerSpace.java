@@ -46,10 +46,17 @@ public abstract class ServerSpace
 	 */
 	abstract public boolean canAccept(ServerPlayer player);
 
+	/**
+	 * Méthode déclenchée lorsque le client reçoit une commande du type {@link juegos.common.CommandType#SPACE} du client, tandis que le client est dans cet espace.
+	 * Les arguments peuvent être n'importe quoi, tant qu'ils correspondent bien à ce que le client attend.
+	 *
+	 * @param player le joueur qui a envoyé la commande
+	 * @param args les arguments de la commande
+	 */
 	abstract public void handleCommand(ServerPlayer player, String[] args);
 
 	/**
-	 * Execute un algorithme qui sera exécuté lorsqu'un joueur se déconnecte. Après l'exécution de cet algorithme, le joueur sera retiré complètement du serveur.
+	 * Méthode déclenchée lorsqu'un joueur se déconnecte. Après l'exécution de cet algorithme, le joueur sera retiré complètement du serveur.
 	 *
 	 * @param player le joueur qui vient de se déconnecter
 	 */
