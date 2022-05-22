@@ -14,10 +14,23 @@ import javax.swing.*;
  */
 public abstract class ClientSpace
 {
+	private ClientSpaceType type;
+
+	public ClientSpace(ClientSpaceType type) {
+		this.type = type;
+	}
+
+	public ClientSpaceType getType() {
+		return type;
+	}
+
 	/**
 	 * Méthode exécutée en boucle, tandis que le client fait partie de cet espace.
 	 */
 	public void tick() {}
 
-	abstract public void createUI(JPanel panel);
+	/**
+	 * Méthode qui construit l'interface de l'espace sous forme d'un Panel.
+	 */
+	abstract public JPanel getUI();
 }

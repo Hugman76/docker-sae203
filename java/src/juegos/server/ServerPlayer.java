@@ -12,6 +12,7 @@ import java.net.Socket;
 
 public class ServerPlayer
 {
+	private String name;
 	private final PrintWriter out;
 	private final BufferedReader in;
 
@@ -20,13 +21,21 @@ public class ServerPlayer
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 	/**
 	 * Attend et lit le prochain message envoyé par le client du joueur.
 	 */
 	public String read() {
 		try {
 			String msg = in.readLine();
-			SharedConstants.debug("Lecture de " + this + " : " + msg);
+			SharedConstants.debug(this + " > " + msg);
 			return msg;
 		} catch(IOException e) {
 			this.getSpace().handleDisconnection(this);
@@ -38,7 +47,7 @@ public class ServerPlayer
 	 * Envoie un message au client du joueur.
 	 */
 	public void write(String msg) {
-		SharedConstants.debug("Envoi à " + this + " : " + msg);
+		SharedConstants.debug(this + " < " + msg);
 		out.println(msg);
 	}
 
@@ -94,5 +103,10 @@ public class ServerPlayer
 	 */
 	public boolean isInGame() {
 		return getSpace().getType() != ServerSpaceType.LOBBY;
+	}
+
+	@Override
+	public String toString() {
+		return this.name == null ? super.toString() : this.name;
 	}
 }

@@ -7,6 +7,7 @@ package juegos.common;
  */
 public class SharedConstants
 {
+	public static final String DEFAULT_HOST = "localhost";
 	public static final int DEFAULT_PORT = 8000;
 	/** Cette variable est utilisée pour envoyer plus d'informations utiles au développement dans les logs. */
 	public static final boolean DEBUG = true;

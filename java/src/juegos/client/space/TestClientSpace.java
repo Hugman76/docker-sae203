@@ -10,11 +10,13 @@ public class TestClientSpace extends ClientSpace
 	private final JLabel lblTest;
 
 	public TestClientSpace() {
+		super(ClientSpaceType.TEST);
 		this.lblTest = new JLabel("TEST !");
 	}
 
 	@Override
-	public void createUI(JPanel panel) {
+	public JPanel getUI() {
+		JPanel panel = new JPanel();
 		JButton btnTest = new JButton("Envoie un truc");
 
 		btnTest.addActionListener(e -> {
@@ -25,5 +27,7 @@ public class TestClientSpace extends ClientSpace
 		panel.setLayout(new GridLayout(2, 2));
 		panel.add(btnTest);
 		panel.add(lblTest);
+
+		return panel;
 	}
 }

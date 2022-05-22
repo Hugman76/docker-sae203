@@ -55,11 +55,19 @@ public class JuegosServer
 		SharedConstants.info("Nouveau client connecté !");
 		try {
 			ServerPlayer player = new ServerPlayer(socket);
-			player.join(ServerSpaceType.LOBBY);
+			player.setName(player.read());
+			player.write(SharedConstants.OK);
+			ServerSpaceType type = ServerSpaceType.getById(player.read());
+			player.join(type);
 			SharedConstants.info(player + " a rejoint le lobby.");
 			new Thread(() -> {
 				while(true) {
 					player.getSpace().handleCommunication(player);
+					try {
+						Thread.sleep(100);
+					} catch(InterruptedException e) {
+						throw new RuntimeException(e);
+					}
 				}
 			}).start();
 		} catch(IOException e) {
