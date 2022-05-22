@@ -38,8 +38,11 @@ public class TestServerSpace extends ServerSpace
 	}
 
 	public String randomString(int length) {
-		byte[] array = new byte[length];
-		new Random().nextBytes(array);
-		return new String(array, StandardCharsets.UTF_8);
+		Random random = new Random();
+		StringBuilder sb = new StringBuilder(length);
+		for(int i = 0; i < length; i++) {
+			sb.append((char) (random.nextInt(26) + 'a'));
+		}
+		return sb.toString();
 	}
 }

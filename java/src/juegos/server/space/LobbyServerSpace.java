@@ -1,5 +1,6 @@
 package juegos.server.space;
 
+import juegos.common.SharedConstants;
 import juegos.server.ServerPlayer;
 
 public class LobbyServerSpace extends ServerSpace
@@ -15,7 +16,14 @@ public class LobbyServerSpace extends ServerSpace
 
 	@Override
 	public void handleCommunication(ServerPlayer player) {
-		ServerSpaceType type = ServerSpaceType.getById(player.read());
-		player.join(type);
+		String typeId = player.read();
+		ServerSpaceType type = ServerSpaceType.getById(typeId);
+		if(type == null) {
+			player.write(SharedConstants.NO);
+			SharedConstants.error("Le type d'espace demandé (" + typeId + ") n'existe pas sur le serveur.");
+		}
+		else {
+			player.join(type);
+		}
 	}
 }

@@ -21,10 +21,6 @@ public class JuegosServer
 		INSTANCE.start(SharedConstants.DEFAULT_PORT);
 	}
 
-	public static ServerSpace getLobby() {
-		return INSTANCE.spaces.get(0);
-	}
-
 	public static List<ServerSpace> getSpaces() {
 		return INSTANCE.spaces;
 	}
