@@ -11,6 +11,11 @@ public class TTTClientSpace extends ClientSpace
 	}
 
 	@Override
+	public void handleCommand(String[] args) {
+
+	}
+
+	@Override
 	public JPanel getUI() {
 		JPanel panel = new JPanel();
 

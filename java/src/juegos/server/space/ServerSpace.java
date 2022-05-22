@@ -28,23 +28,25 @@ public abstract class ServerSpace
 	}
 
 	/**
+	 * Retourne le type de cet espace.
+	 */
+	public ServerSpaceType getType() {
+		return type;
+	}
+
+	/**
+	 * @return la liste des joueurs de cet espace.
+	 */
+	public List<ServerPlayer> getPlayers() {
+		return players;
+	}
+
+	/**
 	 * Retourne si le joueur peut rejoindre cet espace.
 	 */
 	abstract public boolean canAccept(ServerPlayer player);
 
-
-	/**
-	 * Execute un algorithme qui sert à la communication entre le client et le serveur.<br><br>
-	 * <strong>ATTENTION ! Cette méthode est appelée par un thread séparé.</strong><br>
-	 * Cela veut notamment dire que ce code pourra être execute plusieurs fois dans au même moment, mais peut-être pas aux mêmes endroits de l'algorithme.
-	 * Il est donc TRES important de synchroniser les appels des méthodes {@link ServerPlayer#read} et {@link ServerPlayer#write} avec l'espace client équivalent.
-	 *
-	 * @param player le joueur avec lequel on communique
-	 *
-	 * @see ServerPlayer#read
-	 * @see ServerPlayer#write
-	 */
-	abstract public void handleCommunication(ServerPlayer player);
+	abstract public void handleCommand(ServerPlayer player, String[] args);
 
 	/**
 	 * Execute un algorithme qui sera exécuté lorsqu'un joueur se déconnecte. Après l'exécution de cet algorithme, le joueur sera retiré complètement du serveur.
@@ -53,13 +55,6 @@ public abstract class ServerSpace
 	 */
 	public void handleDisconnection(ServerPlayer player) {
 		this.destroy(player);
-	}
-
-	/**
-	 * @return la liste des joueurs de cet espace.
-	 */
-	public List<ServerPlayer> getPlayers() {
-		return players;
 	}
 
 	/**
@@ -82,13 +77,6 @@ public abstract class ServerSpace
 
 		this.getPlayers().stream().filter(serverPlayer -> serverPlayer != player).forEach(player2 -> player2.join(fallbackType));
 		JuegosServer.getSpaces().remove(this);
-	}
-
-	/**
-	 * Retourne le type de cet espace.
-	 */
-	public ServerSpaceType getType() {
-		return type;
 	}
 
 	@Override

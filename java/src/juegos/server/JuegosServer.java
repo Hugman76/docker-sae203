@@ -55,21 +55,14 @@ public class JuegosServer
 		SharedConstants.info("Nouveau client connecté !");
 		try {
 			ServerPlayer player = new ServerPlayer(socket);
-			player.setName(player.read());
-			player.write(SharedConstants.OK);
-			ServerSpaceType type = ServerSpaceType.getById(player.read());
-			player.join(type);
-			SharedConstants.info(player + " a rejoint le lobby.");
 			new Thread(() -> {
 				while(true) {
-					player.getSpace().handleCommunication(player);
-					try {
-						Thread.sleep(100);
-					} catch(InterruptedException e) {
-						throw new RuntimeException(e);
-					}
+					player.read();
 				}
 			}).start();
+
+			player.join(ServerSpaceType.LOBBY);
+			SharedConstants.info(player + " a rejoint le lobby.");
 		} catch(IOException e) {
 			throw new RuntimeException("Impossible de lire/écrire sur le socket : ", e);
 		}

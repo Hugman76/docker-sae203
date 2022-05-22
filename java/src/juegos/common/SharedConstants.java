@@ -14,9 +14,6 @@ public class SharedConstants
 	 */
 	public static final boolean DEBUG = true;
 
-	public static final String OK = "OK";
-	public static final String NO = "NO";
-
 	public static final String LOBBY = "lobby";
 	public static final String TEST = "test";
 	/**

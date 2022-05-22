@@ -2,6 +2,8 @@ package juegos.client;
 
 import juegos.client.space.ClientSpace;
 import juegos.client.space.ClientSpaceType;
+import juegos.common.Command;
+import juegos.common.CommandType;
 import juegos.common.SharedConstants;
 
 import javax.swing.*;
@@ -16,6 +18,8 @@ public class JuegosClient
 	public static final JuegosClient INSTANCE = new JuegosClient();
 
 	public final JFrame frame;
+	public final Thread readingThread;
+	public JPanel mainPanel;
 
 	public PrintWriter writer;
 	public BufferedReader reader;
@@ -27,14 +31,18 @@ public class JuegosClient
 		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+
+		mainPanel = createConnectionPanel();
+
+		readingThread = new Thread(() -> {
+			while(true) {
+				read();
+			}
+		});
 	}
 
 	public static void main(String[] args) {
-		getFrame().getContentPane().removeAll();
-		getFrame().invalidate();
-		getFrame().add(createConnectionPanel());
-		getFrame().validate();
-		getFrame().repaint();
+		refreshUI();
 	}
 
 	/**
@@ -55,18 +63,11 @@ public class JuegosClient
 		Socket socket = new Socket(host, port);
 		INSTANCE.writer = new PrintWriter(socket.getOutputStream(), true);
 		INSTANCE.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		write(username);
-		if(SharedConstants.OK.equals(read())) {
-			SharedConstants.info("Connexion établie !");
-			moveTo(ClientSpaceType.LOBBY);
+		SharedConstants.info("Connexion établie !");
 
-			new Thread(() -> {
-				while(true) {
-					INSTANCE.space.tick();
-				}
-			}).start();
-		}
+		INSTANCE.readingThread.start();
 
+		JuegosClient.write(CommandType.USERNAME.create(username));
 	}
 
 	/**
@@ -77,68 +78,64 @@ public class JuegosClient
 	}
 
 	/**
-	 * Envoie un message au serveur.
+	 * Envoie une commande au serveur.
 	 */
-	public static void write(String msg) {
+	public static void write(Command msg) {
 		SharedConstants.debug("< " + msg);
 		INSTANCE.writer.println(msg);
 	}
 
 	/**
-	 * Attend et lit le prochain message du serveur.
+	 * Attend et exécute la prochaine commande du serveur.
 	 */
-	public static String read() {
+	public static void read() {
 		try {
 			String s = INSTANCE.reader.readLine();
 			SharedConstants.debug("> " + s);
-			return s;
+			Command command = Command.parse(s);
+			if(CommandType.SPACE.equals(command.getType())) {
+				INSTANCE.space.handleCommand(command.getArgs());
+			}
+			else if(CommandType.MOVE.equals(command.getType())) {
+				ClientSpaceType spaceType = ClientSpaceType.getById(command.getArg(0));
+				if(spaceType != null) {
+					INSTANCE.space = spaceType.create();
+					INSTANCE.mainPanel = getSpace().getUI();
+					JuegosClient.getFrame().setTitle(getSpace().getType().getName());
+					JuegosClient.refreshUI();
+				}
+				else {
+					SharedConstants.error("Type d'espace inconnu : " + command.getArg(0));
+					JuegosClient.write(CommandType.MOVE.create(ClientSpaceType.LOBBY.toString()));
+				}
+			}
 		} catch(IOException e) {
 			e.printStackTrace();
-			return null;
+			INSTANCE.writer.close();
+			INSTANCE.mainPanel = createConnectionPanel();
+			refreshUI();
+			INSTANCE.readingThread.stop();
 		}
-	}
-
-	/**
-	 * Déplace le joueur vers le type d'espace demandé.
-	 * Il est important de noter que le client DEMANDE bien au serveur, et que le serveur doit lui répondre.
-	 *
-	 * @return si le joueur a pu se déplacer.
-	 */
-	public static boolean moveTo(ClientSpaceType spaceType) {
-		write(spaceType.getId());
-		String reply = read();
-		if(SharedConstants.OK.equals(reply)) {
-			INSTANCE.space = spaceType.create();
-			JuegosClient.refreshUI();
-			return true;
-		}
-		return false;
 	}
 
 	/**
 	 * Rafraîchit l'interface graphique.
 	 */
 	public static void refreshUI() {
-		JuegosClient.getFrame().setTitle(getSpace().getType().getName());
-
 		getFrame().getContentPane().removeAll();
 		getFrame().invalidate();
-		getFrame().add(getSpace().getUI());
+		getFrame().add(INSTANCE.mainPanel);
 		getFrame().validate();
 		getFrame().repaint();
 
-		SharedConstants.debug("* UI refreshed for type " + getSpace().getType().getName());
-	}
-
-	public static String randomUsername() {
-		String[] names = {"MorpionFan76", "Xx_Puissxnce4_xX", "UnoDosTres", "Elon Musk"};
-		return names[(int) (Math.random() * names.length)];
+		SharedConstants.debug("UI refreshed");
 	}
 
 	public static JPanel createConnectionPanel() {
 		JPanel panel = new JPanel();
 
-		JTextField usernameField = new JTextField(randomUsername(), 20);
+		String[] names = {"MorpionFan76", "Xx_Puissxnce4_xX", "UnoDosTres", "Elon Musk"};
+		JTextField usernameField = new JTextField(names[(int) (Math.random() * names.length)], 20);
 		JTextField hostField = new JTextField(SharedConstants.DEFAULT_HOST, 20);
 		JTextField portField = new JTextField(String.valueOf(SharedConstants.DEFAULT_PORT), 5);
 		JButton connectButton = new JButton("Se connecter");

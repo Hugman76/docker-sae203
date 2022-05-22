@@ -24,10 +24,7 @@ public abstract class ClientSpace
 		return type;
 	}
 
-	/**
-	 * Méthode exécutée en boucle, tandis que le client fait partie de cet espace.
-	 */
-	public void tick() {}
+	abstract public void handleCommand(String[] args);
 
 	/**
 	 * Méthode qui construit l'interface de l'espace sous forme d'un Panel.

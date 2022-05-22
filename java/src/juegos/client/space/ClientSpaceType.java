@@ -36,7 +36,8 @@ public class ClientSpaceType
 		return null;
 	}
 
-	public String getId() {
+	@Override
+	public String toString() {
 		return id;
 	}
 

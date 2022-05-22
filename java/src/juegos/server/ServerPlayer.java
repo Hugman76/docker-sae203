@@ -1,5 +1,7 @@
 package juegos.server;
 
+import juegos.common.Command;
+import juegos.common.CommandType;
 import juegos.common.SharedConstants;
 import juegos.server.space.ServerSpace;
 import juegos.server.space.ServerSpaceType;
@@ -13,12 +15,12 @@ import java.net.Socket;
 public class ServerPlayer
 {
 	private String name;
-	private final PrintWriter out;
-	private final BufferedReader in;
+	private final PrintWriter writer;
+	private final BufferedReader reader;
 
 	public ServerPlayer(Socket socket) throws IOException {
-		out = new PrintWriter(socket.getOutputStream(), true);
-		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		writer = new PrintWriter(socket.getOutputStream(), true);
+		reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	}
 
 	public void setName(String name) {
@@ -30,25 +32,44 @@ public class ServerPlayer
 	}
 
 	/**
-	 * Attend et lit le prochain message envoyé par le client du joueur.
+	 * Attend et lit la prochaine commande envoyée par le client du joueur.
 	 */
-	public String read() {
+	public void read() {
+		String s = null;
 		try {
-			String msg = in.readLine();
-			SharedConstants.debug(this + " > " + msg);
-			return msg;
+			s = this.reader.readLine();
 		} catch(IOException e) {
-			this.getSpace().handleDisconnection(this);
 			throw new RuntimeException(e);
+		}
+		SharedConstants.debug("> " + s);
+		Command command = Command.parse(s);
+		if(CommandType.SPACE.equals(command.getType())) {
+			this.getSpace().handleCommand(this, command.getArgs());
+		}
+		else if(CommandType.ASK_MOVE.equals(command.getType())) {
+			String typeId = command.getArg(0);
+			ServerSpaceType type = ServerSpaceType.getById(command.getArg(0));
+			if(type == null) {
+				SharedConstants.error("Le type d'espace demandé (" + typeId + ") n'existe pas sur le serveur.");
+			}
+			else {
+				this.join(type);
+			}
+		}
+		else if(CommandType.USERNAME.equals(command.getType())) {
+			this.setName(command.getArg(0));
+		}
+		else if(Command.QUIT.equals(command)) {
+			this.getSpace().handleDisconnection(this);
 		}
 	}
 
 	/**
-	 * Envoie un message au client du joueur.
+	 * Envoie une commande au client du joueur.
 	 */
-	public void write(String msg) {
-		SharedConstants.debug(this + " < " + msg);
-		out.println(msg);
+	public void write(Command command) {
+		SharedConstants.debug(this + " < " + command);
+		writer.println(command);
 	}
 
 	/**
@@ -58,7 +79,9 @@ public class ServerPlayer
 	 * @param spaceType le type d'espace dans lequel le joueur doit être placé
 	 */
 	public void join(ServerSpaceType spaceType) {
-		if(spaceType == null) throw new IllegalArgumentException("spaceType ne peut pas être null");
+		if(spaceType == null) {
+			throw new IllegalArgumentException("spaceType ne peut pas être null");
+		}
 		ServerSpace space = null;
 		for(ServerSpace s : JuegosServer.getSpaces()) {
 			if(s.getType().equals(spaceType) && s.canAccept(this)) space = s;
@@ -80,11 +103,10 @@ public class ServerPlayer
 		if(space.canAccept(this)) {
 			if(this.getSpace() != null) this.getSpace().getPlayers().remove(this);
 			space.getPlayers().add(this);
-			this.write(SharedConstants.OK);
+			this.write(CommandType.MOVE.create(space.getType().toString()));
 			return true;
 		}
 		else {
-			this.write(SharedConstants.NO);
 			return false;
 		}
 	}
