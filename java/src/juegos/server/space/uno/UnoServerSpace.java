@@ -1,97 +1,115 @@
-package controleur;
+package juegos.server.space.uno;
+
+import juegos.server.ServerPlayer;
+import juegos.server.space.ServerSpace;
+import juegos.server.space.ServerSpaceType;
+import juegos.server.space.uno.metier.UnoCarte;
+import juegos.server.space.uno.metier.UnoPlayer;
+
 import java.util.ArrayList;
-import iut.algo.Clavier;
 
-import metier.*;
-
-public class UnoControleur
+public class UnoServerSpace extends ServerSpace
 {
     private static final int NB_JOUEUR_MAX = 4;
     private static final int NB_CARTES     = 108;
     private int nbJoueur = 2;
     private UnoCarte cardActuelle;
-    private UnoPlayer[] tabJoueurs; 
-    private ArrayList<UnoCarte> tabCartes = new ArrayList<UnoCarte>();
+    private ArrayList<UnoPlayer> unoPlayers;
+    private ArrayList<UnoCarte> tabCartes = new ArrayList<>();
 
-    public UnoControleur(int nbJoueur, String[] tabPseudos)
-    {       
-        if(nbJoueur >= this.nbJoueur && nbJoueur <= NB_JOUEUR_MAX) this.nbJoueur = nbJoueur;
-        this.tabJoueurs = new UnoPlayer[nbJoueur];
-        getPioche();
-        
-        for(int i = 0; i<nbJoueur;i++)
-        {
-            this.tabJoueurs[i] = new UnoPlayer(tabPseudos[i], i,this);
-        }  
-        this.startGame();
-        
-        System.out.println("Game terminée");        
-        
+    public UnoServerSpace() {
+        this(2);
     }
-    public UnoControleur(){}
+
+    public UnoServerSpace(int nbJoueur) {
+        super(ServerSpaceType.UNO);
+        if(nbJoueur >= this.nbJoueur && nbJoueur <= NB_JOUEUR_MAX) this.nbJoueur = nbJoueur;
+        getPioche();
+
+        this.startGame();
+
+        System.out.println("Game terminée");
+    }
+
+    @Override
+    public void handleConnection(ServerPlayer player) {
+        super.handleConnection(player);
+        this.unoPlayers.add(new UnoPlayer(player, this.getPlayers().size(), this));
+    }
+
+    @Override
+    public boolean canAccept(ServerPlayer player) {
+        return this.getPlayers().size() < this.nbJoueur;
+    }
+
+    @Override
+    public void handleCommand(ServerPlayer player, String[] args) {
+
+    }
+
     public void startGame()
     {
         boolean     winner  = false;
-        this.cardActuelle   = this.getNewCard();    
+        this.cardActuelle   = this.getNewCard();
         int         cpt     = 0;
 
         while(winner == false)
-        {           
-            System.out.println("C'est au tour de "+tabJoueurs[cpt].getPseudo());
+        {
+            System.out.println("C'est au tour de "+unoPlayers.get(cpt).getPlayer().getName());
             System.out.println();
-            System.out.println(this.tabJoueurs[cpt].getPaquet());
+            System.out.println(this.unoPlayers.get(cpt).getPaquet());
             startTour(cpt,this.cardActuelle);
-            
-            if(tabJoueurs[cpt].getNbCartes()==0)
+
+            if(unoPlayers.get(cpt).getNbCartes()==0)
             {
                 winner = true;
-                System.out.println("le gagnant est "+tabJoueurs[cpt]);
+                System.out.println("le gagnant est "+unoPlayers.get(cpt));
             }
             cpt++;
             if(cpt==2)cpt = 0;
         }
     }
-    public void startTour(int cpt,UnoCarte cardActuelle)
+    public void startTour(int cpt, UnoCarte cardActuelle)
     {
         boolean verif  = false;
         System.out.println("\n"+cardActuelle);
         System.out.println("------------------------------");
-        
+
         while(verif == false )
         {
             System.out.println("Choisir une action pioche ou jouer : \n");
-            String actionJoueur = Clavier.lireString();
-            
+            String actionJoueur = "Clavier.lireString()";
+
             if(actionJoueur.equals("pioche"))
             {
-                this.tabJoueurs[cpt].addCard();
+                this.unoPlayers.get(cpt).addCard();
                 verif = true;
             }
 
             if(actionJoueur.equals("jouer"))
             {
                 System.out.println("Choisissez le numéro de la carte");
-                int  numero  = Clavier.lire_int();
+                int  numero  = 0; //Clavier.lire_int()
 
-                if(this.tabJoueurs[cpt].getCard(numero).getCouleur()==this.cardActuelle.getCouleur() || this.tabJoueurs[cpt].getCard(numero).getNumero()==this.cardActuelle.getNumero() || this.tabJoueurs[cpt].getCard(numero).getNumero() == this.cardActuelle.getNumero() )
+                if(this.unoPlayers.get(cpt).getCard(numero).getCouleur()==this.cardActuelle.getCouleur() || this.unoPlayers.get(cpt).getCard(numero).getNumero()==this.cardActuelle.getNumero() || this.unoPlayers.get(cpt).getCard(numero).getNumero() == this.cardActuelle.getNumero() )
                 {
                     this.tabCartes.add(this.cardActuelle);
-                    this.cardActuelle = this.tabJoueurs[cpt].getCard(numero);
-                    this.tabJoueurs[cpt].cardRemove(numero);
+                    this.cardActuelle = this.unoPlayers.get(cpt).getCard(numero);
+                    this.unoPlayers.get(cpt).cardRemove(numero);
                     verif = true;
                 }
 
-                if(this.tabJoueurs[cpt].getCard(numero).getNumero() == 12 && this.tabJoueurs[cpt].getCard(numero).getCouleur() == this.cardActuelle.getCouleur() || this.tabJoueurs[cpt].getCard(numero).getNumero() == 14 )
+                if(this.unoPlayers.get(cpt).getCard(numero).getNumero() == 12 && this.unoPlayers.get(cpt).getCard(numero).getCouleur() == this.cardActuelle.getCouleur() || this.unoPlayers.get(cpt).getCard(numero).getNumero() == 14 )
                 {
-                    powerCarte(this.tabJoueurs[cpt].getCard(numero).getNumero(), cpt);
+                    giveCard(this.unoPlayers.get(cpt).getCard(numero).getNumero(), cpt);
                 }
-                if(this.tabJoueurs[cpt].getCard(numero).getNumero() == 10 || this.tabJoueurs[cpt].getCard(numero).getNumero() == 11)
+                if(this.unoPlayers.get(cpt).getCard(numero).getNumero() == 10 || this.unoPlayers.get(cpt).getCard(numero).getNumero() == 11)
                 {
                     verif = false;
                 }
             }
         }
-        
+
     }
 
     public UnoCarte getNewCard()
@@ -116,7 +134,7 @@ public class UnoControleur
                 this.tabCartes.add(new UnoCarte(couleurs[i], j));
                 this.tabCartes.add(new UnoCarte(couleurs[i], j));
             }
-            //On double les trois cartes 
+            //On double les trois cartes
             for(int j = 0; j<2;j++)
             {
                 //La carte numéro 10 pour l'interdiction de jouer
@@ -126,7 +144,7 @@ public class UnoControleur
                 //La carte numéro 12 pour le +2
                 this.tabCartes.add(new UnoCarte(couleurs[i], 12));
             }
-            
+
             //Numéro 4 avec une couleur noire c'est le +4 avec choix des couleurs
             this.tabCartes.add(new UnoCarte(couleurs[4], 14));
 
@@ -136,32 +154,18 @@ public class UnoControleur
 
         }
     }
-    public void powerCarte(int numero, int cpt)
-    {
-        if(cpt == 0)
-        {
-            for(int i = 0; i<numero;i++)
-            {
-                this.tabJoueurs[1].addCard();
-            }
-        }
-        else
-        {
-            for(int i = 0; i<numero;i++)
-            {
-                this.tabJoueurs[0].addCard();
-            }
-        }
-    }
-    public static void main(String[] args)
-    {
-        int nbJoueur = 2;
-        String joueur1 = "Adrien";
-        String joueur2 = "Hugo";
-        String[] joueurs = new String[nbJoueur];
-        joueurs[0]=joueur1;
-        joueurs[1]=joueur2;
 
-        new UnoControleur(nbJoueur,joueurs);
+    public void giveCard(int numero, int cpt)
+    {
+        if(cpt == 0) {
+            for(int i = 0; i < numero;i++) {
+                this.unoPlayers.get(1).addCard();
+            }
+        }
+        else {
+            for(int i = 0; i < numero;i++) {
+                this.unoPlayers.get(0).addCard();
+            }
+        }
     }
 }

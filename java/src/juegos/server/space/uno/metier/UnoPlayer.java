@@ -1,24 +1,27 @@
-package metier;
+package juegos.server.space.uno.metier;
+
+import juegos.server.ServerPlayer;
+import juegos.server.space.uno.UnoServerSpace;
+
 import java.util.ArrayList;
-import controleur.UnoControleur;
 
 public class UnoPlayer 
 {
-    private String  pseudo;
+    private ServerPlayer player;
     private int     numJoueur;
     private int     nbCartes = 7;
-    private ArrayList<UnoCarte> tabCartes = new ArrayList<UnoCarte>();
-    private UnoControleur ctrl;
+    private ArrayList<UnoCarte> tabCartes = new ArrayList<>();
+    private UnoServerSpace ctrl;
 
-    public UnoPlayer(String pseudo, int numJoueur, UnoControleur ctrl)
+    public UnoPlayer(ServerPlayer player, int numJoueur, UnoServerSpace ctrl)
     {
         this.numJoueur  = numJoueur;
-        this.pseudo     = pseudo;
+        this.player     = player;
         this.ctrl       = ctrl;
         this.piocheDebut();
     }
 
-    public String getPseudo(){return this.pseudo;}
+    public ServerPlayer getPlayer(){return this.player;}
     public int getNbCartes(){return this.tabCartes.size();}
     public UnoCarte getCard(int index){return tabCartes.get(index);}
     public void addCard(){this.tabCartes.add(this.ctrl.getNewCard());}

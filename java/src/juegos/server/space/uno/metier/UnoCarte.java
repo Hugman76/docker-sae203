@@ -1,4 +1,4 @@
-package metier;
+package juegos.server.space.uno.metier;
 
 public class UnoCarte 
 {

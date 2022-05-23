@@ -1,4 +1,4 @@
-package ui;
+package juegos.server.space.uno.ui;
 
 import javax.swing.*;
 
