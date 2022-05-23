@@ -52,7 +52,7 @@ public class ConnectFourServerSpace extends ServerSpace
 			}
 		}
 		for(ServerPlayer player : this.getPlayers()) {
-			player.join(ServerSpaceType.LOBBY);
+			player.leave();
 		}
 	}
 

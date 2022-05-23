@@ -96,6 +96,13 @@ public class ServerPlayer
 	}
 
 	/**
+	 * Méthode de raccourci pour renvoyer quelqu'un au lobby.
+	 */
+	public void leave() {
+		this.join(ServerSpaceType.LOBBY);
+	}
+
+	/**
 	 * Place un joueur dans le premier espace du type demandé qui est disponible, et qu'il peut rejoindre.
 	 * Si aucun espace est disponible, alors un nouvel espace est créé.
 	 *
