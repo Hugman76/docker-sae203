@@ -35,7 +35,7 @@ public class ServerPlayer
 	 * Attend et lit la prochaine commande envoyée par le client du joueur.
 	 */
 	public void read() {
-		String s = null;
+		String s;
 		try {
 			s = this.reader.readLine();
 		} catch(IOException e) {
@@ -100,11 +100,13 @@ public class ServerPlayer
 	 * @see #join(ServerSpaceType)
 	 */
 	private boolean join(ServerSpace space) {
-		SharedConstants.debug(this + " essaye de rejoindre " + space.toString() + " depuis " + getSpace());
+		SharedConstants.debug(this + " essaye de rejoindre " + space + " depuis " + getSpace());
 		if(space.canAccept(this)) {
+			SharedConstants.debug(this + " va rejoindre " + space + " depuis " + getSpace());
 			if(this.getSpace() != null) this.getSpace().getPlayers().remove(this);
 			space.getPlayers().add(this);
 			this.write(CommandType.MOVE.create(space.getType().toString()));
+			this.getSpace().handleConnection(this);
 			return true;
 		}
 		else {

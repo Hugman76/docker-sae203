@@ -65,6 +65,13 @@ public abstract class ServerSpace
 	}
 
 	/**
+	 * Méthode déclenchée lorsqu'un joueur se connecte.
+	 *
+	 * @param player le joueur qui vient de se connecter
+	 */
+	public void handleConnection(ServerPlayer player) {}
+
+	/**
 	 * Déplace les joueurs au lobby, puis détruit cet espace.
 	 *
 	 * @param player le joueur qui a causé la destruction de cet espace. On le retire de la liste des joueurs à rediriger, car il se trouve sûrement déjà autre part.
