@@ -32,7 +32,7 @@ public class ConnectFourServerSpace extends ServerSpace
 
 	@Override
 	public boolean canAccept(ServerPlayer player) {
-		return this.getPlayers().size() <= this.players.length;
+		return this.getPlayers().size() < this.players.length;
 	}
 
 	@Override
