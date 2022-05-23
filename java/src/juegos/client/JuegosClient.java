@@ -88,7 +88,7 @@ public class JuegosClient
 	/**
 	 * Attend et exécute la prochaine commande du serveur.
 	 */
-	public static void read() {
+	private static void read() {
 		try {
 			String s = INSTANCE.reader.readLine();
 			SharedConstants.debug("> " + s);

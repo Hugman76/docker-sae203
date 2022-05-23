@@ -34,7 +34,7 @@ public class ServerPlayer
 	/**
 	 * Attend et lit la prochaine commande envoyée par le client du joueur.
 	 */
-	public void read() {
+	protected void read() {
 		String s;
 		try {
 			s = this.reader.readLine();

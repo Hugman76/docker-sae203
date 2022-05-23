@@ -1,5 +1,8 @@
 package juegos.client.space;
 
+import juegos.client.JuegosClient;
+import juegos.common.CommandType;
+
 import javax.swing.*;
 
 /**
@@ -22,6 +25,14 @@ public abstract class ClientSpace
 
 	public ClientSpaceType getType() {
 		return type;
+	}
+
+	/**
+	 * Méthode de raccourci pour envoyer une commande d'espace au serveur.
+	 * @param args les arguments de la commande
+	 */
+	public void write(String... args) {
+		JuegosClient.write(CommandType.SPACE.create(args));
 	}
 
 	/**
