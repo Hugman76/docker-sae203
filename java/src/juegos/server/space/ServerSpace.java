@@ -1,5 +1,6 @@
 package juegos.server.space;
 
+import juegos.common.CommandType;
 import juegos.server.JuegosServer;
 import juegos.server.ServerPlayer;
 
@@ -46,12 +47,23 @@ public abstract class ServerSpace
 	 */
 	abstract public boolean canAccept(ServerPlayer player);
 
+
+	/**
+	 * Méthode de raccourci pour envoyer une commande d'espace à un client.
+	 *
+	 * @param player le joueur à qui envoyer la commande
+	 * @param args   les arguments de la commande
+	 */
+	public void write(ServerPlayer player, String... args) {
+		player.write(CommandType.SPACE.create(args));
+	}
+
 	/**
 	 * Méthode déclenchée lorsque le client reçoit une commande du type {@link juegos.common.CommandType#SPACE} du client, tandis que le client est dans cet espace.
 	 * Les arguments peuvent être n'importe quoi, tant qu'ils correspondent bien à ce que le client attend.
 	 *
 	 * @param player le joueur qui a envoyé la commande
-	 * @param args les arguments de la commande
+	 * @param args   les arguments de la commande
 	 */
 	abstract public void handleCommand(ServerPlayer player, String[] args);
 

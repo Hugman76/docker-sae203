@@ -29,6 +29,7 @@ public abstract class ClientSpace
 
 	/**
 	 * Méthode de raccourci pour envoyer une commande d'espace au serveur.
+	 *
 	 * @param args les arguments de la commande
 	 */
 	public void write(String... args) {
