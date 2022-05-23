@@ -9,21 +9,23 @@ public class ClientSpaceType
 {
 	public static final ArrayList<ClientSpaceType> TYPES = new ArrayList<>();
 
-	public static final ClientSpaceType LOBBY = register(SharedConstants.LOBBY, LobbyClientSpace::new);
-	public static final ClientSpaceType TEST = register(SharedConstants.TEST, TestClientSpace::new);
-	public static final ClientSpaceType CONNECT_FOUR = register(SharedConstants.CONNECT_FOUR, ConnectFourClientSpace::new);
-	public static final ClientSpaceType TIC_TAC_TOE = register(SharedConstants.TIC_TAC_TOE, TTTClientSpace::new);
+	public static final ClientSpaceType LOBBY = register("Menu principal", SharedConstants.LOBBY, LobbyClientSpace::new);
+	public static final ClientSpaceType TEST = register("DEBUG TEST", SharedConstants.TEST, TestClientSpace::new);
+	public static final ClientSpaceType CONNECT_FOUR = register("Puissance 4", SharedConstants.CONNECT_FOUR, ConnectFourClientSpace::new);
+	public static final ClientSpaceType TIC_TAC_TOE = register("Morpion", SharedConstants.TIC_TAC_TOE, TTTClientSpace::new);
 
+	private final String name;
 	private final String id;
 	private final Supplier<ClientSpace> spaceSupplier;
 
-	public ClientSpaceType(String id, Supplier<ClientSpace> spaceSupplier) {
+	public ClientSpaceType(String name, String id, Supplier<ClientSpace> spaceSupplier) {
+		this.name = name;
 		this.id = id;
 		this.spaceSupplier = spaceSupplier;
 	}
 
-	public static ClientSpaceType register(String id, Supplier<ClientSpace> spaceSupplier) {
-		ClientSpaceType type = new ClientSpaceType(id, spaceSupplier);
+	public static ClientSpaceType register(String name, String id, Supplier<ClientSpace> spaceSupplier) {
+		ClientSpaceType type = new ClientSpaceType(name, id, spaceSupplier);
 		TYPES.add(type);
 		return type;
 	}
@@ -43,7 +45,7 @@ public class ClientSpaceType
 	}
 
 	public String getName() {
-		return id.replace('_', ' ').toUpperCase();
+		return name;
 	}
 
 	public ClientSpace create() {

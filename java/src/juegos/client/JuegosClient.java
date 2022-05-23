@@ -7,6 +7,7 @@ import juegos.common.CommandType;
 import juegos.common.SharedConstants;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -31,6 +32,7 @@ public class JuegosClient
 		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+		frame.setLayout(new BorderLayout());
 
 		mainPanel = createConnectionPanel();
 	}
@@ -58,15 +60,13 @@ public class JuegosClient
 		INSTANCE.writer = new PrintWriter(socket.getOutputStream(), true);
 		INSTANCE.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		SharedConstants.info("Connexion établie !");
-
+		JuegosClient.sendCommand(CommandType.USERNAME.create(username));
 		INSTANCE.readingThread = new Thread(() -> {
 			while(true) {
 				read();
 			}
 		});
 		INSTANCE.readingThread.start();
-
-		JuegosClient.sendCommand(CommandType.USERNAME.create(username));
 	}
 
 	/**
@@ -109,13 +109,19 @@ public class JuegosClient
 				}
 			}
 		} catch(IOException e) {
+			disconnect();
 			e.printStackTrace();
-			INSTANCE.writer.close();
-			INSTANCE.mainPanel = createConnectionPanel();
-			refreshUI();
-			INSTANCE.readingThread.stop();
-			INSTANCE.readingThread = null;
 		}
+	}
+
+	public static void disconnect() {
+		JuegosClient.sendCommand(Command.QUIT);
+		INSTANCE.writer.close();
+		INSTANCE.mainPanel = createConnectionPanel();
+		INSTANCE.readingThread.stop();
+		INSTANCE.readingThread = null;
+		INSTANCE.space = null;
+		refreshUI();
 	}
 
 	/**
@@ -124,7 +130,23 @@ public class JuegosClient
 	public static void refreshUI() {
 		getFrame().getContentPane().removeAll();
 		getFrame().invalidate();
-		getFrame().add(INSTANCE.mainPanel);
+		getFrame().add(INSTANCE.mainPanel, BorderLayout.CENTER);
+		if(getSpace() != null) {
+			JPanel bottomPanel = new JPanel();
+
+			if(getSpace().getType() == ClientSpaceType.LOBBY) {
+				JButton leaveButton = new JButton("Se déconnecter");
+				leaveButton.addActionListener(e -> disconnect());
+				bottomPanel.add(leaveButton);
+			}
+			else {
+				JButton leaveButton = new JButton("Quitter");
+				leaveButton.addActionListener(e -> JuegosClient.sendCommand(CommandType.ASK_MOVE.create(ClientSpaceType.LOBBY.toString())));
+				bottomPanel.add(leaveButton);
+			}
+			getFrame().add(bottomPanel, BorderLayout.SOUTH);
+		}
+
 		getFrame().validate();
 		getFrame().repaint();
 
