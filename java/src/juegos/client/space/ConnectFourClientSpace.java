@@ -8,6 +8,10 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+/**
+ * Espace client du Puissance 4.
+ * @author Hugman_76
+ */
 public class ConnectFourClientSpace extends ClientSpace
 {
 	private final JButton[] buttons;
@@ -15,8 +19,8 @@ public class ConnectFourClientSpace extends ClientSpace
 
 	public ConnectFourClientSpace() {
 		super(ClientSpaceType.CONNECT_FOUR);
-		this.cells = new JLabel[SharedConstants.CONNECT_FOUR_WIDTH][SharedConstants.CONNECT_FOUR_HEIGHT];
 		this.buttons = new JButton[SharedConstants.CONNECT_FOUR_WIDTH];
+		this.cells = new JLabel[SharedConstants.CONNECT_FOUR_WIDTH][SharedConstants.CONNECT_FOUR_HEIGHT];
 	}
 
 	@Override
@@ -26,18 +30,17 @@ public class ConnectFourClientSpace extends ClientSpace
 				this.updateCellsFromString(args[2]);
 			}
 		}
-	}
-
-	public void toggleColumns(int[] columns) {
-		for(int x : columns) {
-			for(int y = 0; y < this.cells[x].length; y++) {
-				this.cells[x][y].setBackground(Color.RED);
+		if(args[0].equals(SharedConstants.CONNECT_FOUR_CMD_COLUMN)) {
+			if(args[1].equals(SharedConstants.CONNECT_FOUR_CMD_COLUMN_LOCK)) {
+				for(String s : args[2].split(SharedConstants.ARGUMENT_DELIMITER)) {
+					this.buttons[Integer.parseInt(s)].setEnabled(!Boolean.parseBoolean(args[3]));
+				}
 			}
 		}
 	}
 
 	public void updateCellsFromString(String cells) {
-		String[] cellsLines = cells.split(SharedConstants.CONNECT_FOUR_CELLS_DELIMITER);
+		String[] cellsLines = cells.split(SharedConstants.ARGUMENT_DELIMITER);
 		for(int x = 0; x < cellsLines.length; x++) {
 			for(int y = 0; y < cellsLines[x].length(); y++) {
 				this.cells[x][y].setBackground(switch(cellsLines[x].charAt(y)) {
@@ -66,16 +69,16 @@ public class ConnectFourClientSpace extends ClientSpace
 		// Ajout des boutons de contrôles
 		for(int x = 0; x < SharedConstants.CONNECT_FOUR_WIDTH; x++) {
 			final Image img = Toolkit.getDefaultToolkit().getImage("data/images/connect_four/button.png");
-			JButton button = new JButton(new ImageIcon(img.getScaledInstance(120, 120,  java.awt.Image.SCALE_SMOOTH)));
-			button.setHorizontalTextPosition(JButton.CENTER);
-			button.setVerticalTextPosition(JButton.CENTER);
+			this.buttons[x] = new JButton(new ImageIcon(img.getScaledInstance(120, 120,  java.awt.Image.SCALE_SMOOTH)));
+			this.buttons[x].setHorizontalTextPosition(JButton.CENTER);
+			this.buttons[x].setVerticalTextPosition(JButton.CENTER);
 
 			int finalX = x;
-			button.addActionListener(e -> this.sendCommand(
+			this.buttons[x].addActionListener(e -> this.sendCommand(
 					SharedConstants.CONNECT_FOUR_CMD_CELL,
 					SharedConstants.CONNECT_FOUR_CMD_CELL_PUT,
 					String.valueOf(finalX)));
-			gamePanel.add(button);
+			gamePanel.add(this.buttons[x]);
 		}
 
 		// Ajout des cellules

@@ -1,10 +1,10 @@
 package juegos.server.space;
 
 import juegos.common.CommandType;
+import juegos.common.SharedConstants;
 import juegos.server.JuegosServer;
 import juegos.server.ServerPlayer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +23,6 @@ public abstract class ServerSpace
 
 	public ServerSpace(ServerSpaceType type) {
 		this.type = type;
-		JuegosServer.getSpaces().add(this);
 	}
 
 	/**
@@ -44,6 +43,15 @@ public abstract class ServerSpace
 	 * Retourne si le joueur peut rejoindre cet espace.
 	 */
 	abstract public boolean canAccept(ServerPlayer player);
+
+	/**
+	 * Méthode de raccourci pour envoyer une commande d'espace à TOUS les clients.
+	 *
+	 * @param args   les arguments de la commande
+	 */
+	public void sendCommand(String... args) {
+		getPlayers().forEach(p -> this.sendCommand(p, args));
+	}
 
 
 	/**
@@ -66,20 +74,22 @@ public abstract class ServerSpace
 	abstract public void handleCommand(ServerPlayer player, String[] args);
 
 	/**
-	 * Méthode déclenchée lorsqu'un joueur se déconnecte. Après l'exécution de cet algorithme, le joueur sera retiré complètement du serveur.
-	 *
-	 * @param player le joueur qui vient de se déconnecter
-	 */
-	public void handleDisconnection(ServerPlayer player) {
-		this.destroy(player);
-	}
-
-	/**
 	 * Méthode déclenchée lorsqu'un joueur se connecte.
 	 *
 	 * @param player le joueur qui vient de se connecter
 	 */
-	public void handleConnection(ServerPlayer player) {}
+	public void handleJoin(ServerPlayer player) {}
+
+	/**
+	 * Méthode déclenchée lorsqu'un joueur se retire de cet espace.
+	 *
+	 * @param player le joueur qui vient de se déconnecter
+	 */
+	public void handleLeave(ServerPlayer player) {
+		if(this.getPlayers().isEmpty()) {
+			this.destroy(player);
+		}
+	}
 
 	/**
 	 * Déplace les joueurs au lobby, puis détruit cet espace.
@@ -97,10 +107,12 @@ public abstract class ServerSpace
 	 * @param fallbackType le type d'espace vers lequel rediriger les joueurs
 	 */
 	public void destroy(ServerPlayer player, ServerSpaceType fallbackType) {
-		JuegosServer.getSpaces().remove(this);
-		for(ServerPlayer player1 : this.getPlayers()) {
-			if(player1 != player) {
-				player1.join(fallbackType);
+		if(JuegosServer.getSpaces().contains(this)) {
+			boolean b = JuegosServer.deleteSpace(this);
+			for(ServerPlayer p : this.getPlayers()) {
+				if(p != player) {
+					p.join(fallbackType);
+				}
 			}
 		}
 	}
@@ -108,7 +120,8 @@ public abstract class ServerSpace
 	@Override
 	public String toString() {
 		return "ServerSpace{" +
-				"type=" + type +
+				"type=" + type + ", " +
+				"players=" + getPlayers() +
 				'}';
 	}
 }

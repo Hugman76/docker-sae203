@@ -1,6 +1,7 @@
 package juegos.server.space;
 
 import juegos.common.SharedConstants;
+import juegos.server.JuegosServer;
 import juegos.server.space.uno.UnoServerSpace;
 
 import java.util.ArrayList;
@@ -40,7 +41,9 @@ public class ServerSpaceType
 	}
 
 	public ServerSpace create() {
-		return this.supplier.get();
+		ServerSpace space = this.supplier.get();
+		JuegosServer.addSpace(space);
+		return space;
 	}
 
 	@Override

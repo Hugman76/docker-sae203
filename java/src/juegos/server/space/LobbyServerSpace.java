@@ -17,5 +17,5 @@ public class LobbyServerSpace extends ServerSpace
 	public void handleCommand(ServerPlayer player, String[] args) {}
 
 	@Override
-	public void handleDisconnection(ServerPlayer player) {}
+	public void handleLeave(ServerPlayer player) {}
 }

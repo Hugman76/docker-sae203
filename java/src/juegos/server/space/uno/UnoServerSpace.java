@@ -32,8 +32,8 @@ public class UnoServerSpace extends ServerSpace
     }
 
     @Override
-    public void handleConnection(ServerPlayer player) {
-        super.handleConnection(player);
+    public void handleJoin(ServerPlayer player) {
+        super.handleJoin(player);
         this.unoPlayers.add(new UnoPlayer(player, this.getPlayers().size(), this));
     }
 

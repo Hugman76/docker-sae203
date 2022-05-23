@@ -30,8 +30,6 @@ public class ServerPlayer
 			}
 		});
 		this.thread.start();
-
-		JuegosServer.getPlayers().add(this);
 	}
 
 	public String getName() {
@@ -55,8 +53,9 @@ public class ServerPlayer
 	}
 
 	public void disconnect() {
-		this.space.handleDisconnection(this);
-		JuegosServer.getPlayers().remove(this);
+		this.space.handleLeave(this);
+		JuegosServer.removePlayer(this);
+		this.space = null;
 		SharedConstants.info(this + " s'est déconnecté du serveur.");
 		this.thread.stop();
 	}
@@ -109,8 +108,6 @@ public class ServerPlayer
 	 * @param spaceType le type d'espace dans lequel le joueur doit être placé
 	 */
 	public void join(ServerSpaceType spaceType) {
-		// TODO : fixer ça, y'as toujours une ConcurrentModificationException qui nous empêche de retirer les joueurs de la liste
-
 		if(spaceType == null) {
 			throw new IllegalArgumentException("spaceType ne peut pas être null");
 		}
@@ -118,7 +115,10 @@ public class ServerPlayer
 		for(ServerSpace s : JuegosServer.getSpaces()) {
 			if(s.getType().equals(spaceType) && s.canAccept(this)) space = s;
 		}
-		if(space == null) space = spaceType.create();
+		if(space == null) {
+			space = spaceType.create();
+		}
+
 		if(!this.join(space)) {
 			throw new RuntimeException("Impossible de rejoindre cet espace. Cela ne devrait pas arriver. Bizarre... Veuillez vérifier que les espaces de type " + spaceType + " peuvent accepter de nouveaux joueurs juste après avoir été créés.");
 		}
@@ -133,11 +133,11 @@ public class ServerPlayer
 	private boolean join(ServerSpace space) {
 		SharedConstants.debug(this + " essaye de rejoindre " + space + " depuis " + this.space);
 		if(space.canAccept(this)) {
-			SharedConstants.debug(this + " va rejoindre " + space + " depuis " + this.space);
-
+			ServerSpace previousSpace = this.space;
 			this.space = space;
+			if(previousSpace != null) previousSpace.handleLeave(this);
+			this.space.handleJoin(this);
 			this.sendCommand(CommandType.MOVE.create(space.getType().toString()));
-			this.space.handleConnection(this);
 			return true;
 		}
 		else {
