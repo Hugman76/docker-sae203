@@ -8,7 +8,6 @@ import java.util.Objects;
  */
 public class Command
 {
-	private static final String DELIMITER = ":";
 	public static final Command QUIT = CommandType.INFO.create("quit");
 	public static final Command INFO_NO = CommandType.INFO.create("no");
 
@@ -21,7 +20,7 @@ public class Command
 	}
 
 	public static Command fromString(String s) {
-		String[] parts = s.split(DELIMITER);
+		String[] parts = s.split(SharedConstants.COMMAND_DELIMITER);
 		CommandType type = CommandType.fromString(parts[0]);
 		String[] args = Arrays.copyOfRange(parts, 1, parts.length);
 		return new Command(type, args);
@@ -52,7 +51,7 @@ public class Command
 
 	@Override
 	public String toString() {
-		return this.type + DELIMITER + String.join(DELIMITER, this.args);
+		return this.type + SharedConstants.COMMAND_DELIMITER + String.join(SharedConstants.COMMAND_DELIMITER, this.args);
 	}
 
 	@Override

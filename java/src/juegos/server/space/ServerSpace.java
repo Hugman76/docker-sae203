@@ -101,8 +101,8 @@ public abstract class ServerSpace
 	public void destroy(ServerPlayer player, ServerSpaceType fallbackType) {
 		// TODO : fixer ça, y'as toujours une ConcurrentModificationException qui nous empêche de retirer les joueurs de la liste
 
-		this.getPlayers().stream().filter(serverPlayer -> serverPlayer != player).forEach(player2 -> player2.join(fallbackType));
 		JuegosServer.getSpaces().remove(this);
+		this.getPlayers().stream().filter(serverPlayer -> serverPlayer != player).forEach(player2 -> player2.join(fallbackType));
 	}
 
 	@Override

@@ -1,14 +1,20 @@
 package juegos.server.space;
 
+import juegos.common.SharedConstants;
 import juegos.server.ServerPlayer;
+
+import java.util.Arrays;
 
 public class ConnectFourServerSpace extends ServerSpace
 {
 	private final char[][] tileSet;
 
 	public ConnectFourServerSpace() {
-		super(ServerSpaceType.TIC_TAC_TOE);
-		this.tileSet = new char[7][6];
+		super(ServerSpaceType.CONNECT_FOUR);
+		this.tileSet = new char[SharedConstants.CONNECT_FOUR_WIDTH][SharedConstants.CONNECT_FOUR_HEIGHT];
+		for(char[] charLine : this.tileSet) {
+			Arrays.fill(charLine, '0');
+		}
 	}
 
 	@Override
@@ -19,25 +25,35 @@ public class ConnectFourServerSpace extends ServerSpace
 	@Override
 	public void handleCommand(ServerPlayer player, String[] args) {
 		if(args[0].equals("tile") && args[1].equals("drop")) {
-			int x = Integer.parseInt(args[2]);
-			for(int y = 0; y < this.tileSet[x].length; y++) {
-				while(this.tileSet[x][y] != ' ') {
-					y++;
-				}
-			}
+			dropTile(player, Integer.parseInt(args[2]));
 		}
 	}
 
-	public String tileSetToString() {
-		StringBuilder s = new StringBuilder();
-		for(int x = 0; x < this.tileSet.length; x++) {
-			for(int y = 0; y < this.tileSet[x].length; y++) {
-				s.append(this.tileSet[x][y]);
-			}
-			if(x < this.tileSet.length - 1) {
-				s.append(";");
+	public void dropTile(ServerPlayer player, int x) {
+		for(int y = 0; y < this.tileSet[x].length; y++) {
+			if(this.tileSet[x][y] == '0') {
+				if(this.getPlayers().get(0) == player)
+					this.tileSet[x][y] = '1';
+				else
+					this.tileSet[x][y] = '2';
+				break;
 			}
 		}
-		return s.toString();
+		this.sendTileSetToClients();
+	}
+
+	public void sendTileSetToClients() {
+		this.getPlayers().forEach(player1 -> {
+			StringBuilder s = new StringBuilder();
+			for(int x = 0; x < this.tileSet.length; x++) {
+				for(int y = 0; y < this.tileSet[x].length; y++) {
+					s.append(this.tileSet[x][y]);
+				}
+				if(x < this.tileSet.length - 1) {
+					s.append(SharedConstants.CONNECT_FOUR_DELIMITER);
+				}
+			}
+			this.sendCommand(player1, "tiles", s.toString());
+		});
 	}
 }
