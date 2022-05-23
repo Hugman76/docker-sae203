@@ -1,6 +1,5 @@
 package juegos.server.space;
 
-import juegos.common.CommandType;
 import juegos.server.ServerPlayer;
 
 import java.util.Random;
@@ -19,7 +18,7 @@ public class TestServerSpace extends ServerSpace
 	@Override
 	public void handleCommand(ServerPlayer player, String[] args) {
 		if(args[0].equals("text") && args[1].equals("get")) {
-			player.write(CommandType.SPACE.create("text", "set", this.randomString(4)));
+			this.sendCommand(player, "text", "set", this.randomString(4));
 		}
 	}
 

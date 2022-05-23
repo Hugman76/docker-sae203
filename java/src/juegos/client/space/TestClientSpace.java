@@ -1,8 +1,5 @@
 package juegos.client.space;
 
-import juegos.client.JuegosClient;
-import juegos.common.CommandType;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -27,7 +24,7 @@ public class TestClientSpace extends ClientSpace
 		JButton btnTest = new JButton("Envoyer une commande au serveur");
 
 		btnTest.addActionListener(e -> {
-			JuegosClient.write(CommandType.SPACE.create("text", "get"));
+			this.sendCommand("text", "get");
 		});
 
 		panel.setLayout(new GridLayout(2, 2));

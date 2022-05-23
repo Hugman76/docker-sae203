@@ -11,6 +11,7 @@ public class ServerSpaceType
 
 	public static final ServerSpaceType LOBBY = register(SharedConstants.LOBBY, LobbyServerSpace::new);
 	public static final ServerSpaceType TEST = register(SharedConstants.TEST, TestServerSpace::new);
+	public static final ServerSpaceType CONNECT_FOUR = register(SharedConstants.CONNECT_FOUR, ConnectFourServerSpace::new);
 	public static final ServerSpaceType TIC_TAC_TOE = register(SharedConstants.TIC_TAC_TOE, TTTServerSpace::new);
 
 	private final String id;
@@ -19,10 +20,6 @@ public class ServerSpaceType
 	public ServerSpaceType(String id, Supplier<ServerSpace> supplier) {
 		this.id = id;
 		this.supplier = supplier;
-	}
-
-	public ServerSpace create() {
-		return this.supplier.get();
 	}
 
 	public static ServerSpaceType register(String id, Supplier<ServerSpace> supplier) {
@@ -38,6 +35,10 @@ public class ServerSpaceType
 			}
 		}
 		return null;
+	}
+
+	public ServerSpace create() {
+		return this.supplier.get();
 	}
 
 	@Override

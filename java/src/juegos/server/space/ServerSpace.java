@@ -54,8 +54,8 @@ public abstract class ServerSpace
 	 * @param player le joueur à qui envoyer la commande
 	 * @param args   les arguments de la commande
 	 */
-	public void write(ServerPlayer player, String... args) {
-		player.write(CommandType.SPACE.create(args));
+	public void sendCommand(ServerPlayer player, String... args) {
+		player.sendCommand(CommandType.SPACE.create(args));
 	}
 
 	/**

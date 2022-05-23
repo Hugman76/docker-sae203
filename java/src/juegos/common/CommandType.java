@@ -19,11 +19,6 @@ public class CommandType
 		TYPES.add(this);
 	}
 
-	@Override
-	public String toString() {
-		return s;
-	}
-
 	public static CommandType fromString(String s) {
 		for(CommandType t : TYPES) {
 			if(t.s.equals(s)) {
@@ -31,6 +26,11 @@ public class CommandType
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public String toString() {
+		return s;
 	}
 
 	public Command create(String... args) {

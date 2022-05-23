@@ -11,6 +11,7 @@ public class ClientSpaceType
 
 	public static final ClientSpaceType LOBBY = register(SharedConstants.LOBBY, LobbyClientSpace::new);
 	public static final ClientSpaceType TEST = register(SharedConstants.TEST, TestClientSpace::new);
+	public static final ClientSpaceType CONNECT_FOUR = register(SharedConstants.CONNECT_FOUR, ConnectFourClientSpace::new);
 	public static final ClientSpaceType TIC_TAC_TOE = register(SharedConstants.TIC_TAC_TOE, TTTClientSpace::new);
 
 	private final String id;

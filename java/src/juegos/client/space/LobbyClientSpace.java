@@ -25,7 +25,7 @@ public class LobbyClientSpace extends ClientSpace
 			if(spaceType != ClientSpaceType.LOBBY) {
 				JButton button = new JButton(spaceType.getName());
 				button.addActionListener(e -> {
-					JuegosClient.write(CommandType.ASK_MOVE.create(spaceType.toString()));
+					JuegosClient.sendCommand(CommandType.ASK_MOVE.create(spaceType.toString()));
 				});
 				panel.add(button);
 			}

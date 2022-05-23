@@ -67,7 +67,7 @@ public class JuegosClient
 
 		INSTANCE.readingThread.start();
 
-		JuegosClient.write(CommandType.USERNAME.create(username));
+		JuegosClient.sendCommand(CommandType.USERNAME.create(username));
 	}
 
 	/**
@@ -80,13 +80,13 @@ public class JuegosClient
 	/**
 	 * Envoie une commande au serveur.
 	 */
-	public static void write(Command msg) {
+	public static void sendCommand(Command msg) {
 		SharedConstants.debug("< " + msg);
 		INSTANCE.writer.println(msg);
 	}
 
 	/**
-	 * Attend et exécute la prochaine commande du serveur.
+	 * Attend et lit le prochain message du serveur.
 	 */
 	private static void read() {
 		try {
@@ -106,7 +106,7 @@ public class JuegosClient
 				}
 				else {
 					SharedConstants.error("Type d'espace inconnu : " + command.getArg(0));
-					JuegosClient.write(CommandType.MOVE.create(ClientSpaceType.LOBBY.toString()));
+					JuegosClient.sendCommand(CommandType.MOVE.create(ClientSpaceType.LOBBY.toString()));
 				}
 			}
 		} catch(IOException e) {

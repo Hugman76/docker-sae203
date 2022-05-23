@@ -32,8 +32,8 @@ public abstract class ClientSpace
 	 *
 	 * @param args les arguments de la commande
 	 */
-	public void write(String... args) {
-		JuegosClient.write(CommandType.SPACE.create(args));
+	public void sendCommand(String... args) {
+		JuegosClient.sendCommand(CommandType.SPACE.create(args));
 	}
 
 	/**

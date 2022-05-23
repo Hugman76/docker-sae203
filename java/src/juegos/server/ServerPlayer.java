@@ -14,25 +14,33 @@ import java.net.Socket;
 
 public class ServerPlayer
 {
-	private String name;
 	private final PrintWriter writer;
 	private final BufferedReader reader;
+	private String name;
 
 	public ServerPlayer(Socket socket) throws IOException {
 		writer = new PrintWriter(socket.getOutputStream(), true);
 		reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getName() {
 		return name;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	/**
-	 * Attend et lit la prochaine commande envoyée par le client du joueur.
+	 * Envoie une commande au client du joueur.
+	 */
+	public void sendCommand(Command command) {
+		SharedConstants.debug(this + " < " + command);
+		writer.println(command);
+	}
+
+	/**
+	 * Attend et lit le prochain message envoyé par le client du joueur.
 	 */
 	protected void read() {
 		String s;
@@ -63,14 +71,6 @@ public class ServerPlayer
 			this.getSpace().handleDisconnection(this);
 			JuegosServer.getPlayers().remove(this);
 		}
-	}
-
-	/**
-	 * Envoie une commande au client du joueur.
-	 */
-	public void write(Command command) {
-		SharedConstants.debug(this + " < " + command);
-		writer.println(command);
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class ServerPlayer
 			SharedConstants.debug(this + " va rejoindre " + space + " depuis " + getSpace());
 			if(this.getSpace() != null) this.getSpace().getPlayers().remove(this);
 			space.getPlayers().add(this);
-			this.write(CommandType.MOVE.create(space.getType().toString()));
+			this.sendCommand(CommandType.MOVE.create(space.getType().toString()));
 			this.getSpace().handleConnection(this);
 			return true;
 		}

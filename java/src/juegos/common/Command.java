@@ -1,6 +1,5 @@
 package juegos.common;
 
-
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -9,6 +8,7 @@ import java.util.Objects;
  */
 public class Command
 {
+	private static final String DELIMITER = ":";
 	public static final Command QUIT = CommandType.INFO.create("quit");
 	public static final Command INFO_NO = CommandType.INFO.create("no");
 
@@ -20,20 +20,8 @@ public class Command
 		this.args = args;
 	}
 
-	public CommandType getType() {
-		return type;
-	}
-
-	public String[] getArgs() {
-		return args;
-	}
-
-	public String getArg(int index) {
-		return this.args[index];
-	}
-
 	public static Command fromString(String s) {
-		String[] parts = s.split(":");
+		String[] parts = s.split(DELIMITER);
 		CommandType type = CommandType.fromString(parts[0]);
 		String[] args = Arrays.copyOfRange(parts, 1, parts.length);
 		return new Command(type, args);
@@ -50,9 +38,21 @@ public class Command
 		return Objects.requireNonNullElse(command, QUIT);
 	}
 
+	public CommandType getType() {
+		return type;
+	}
+
+	public String[] getArgs() {
+		return args;
+	}
+
+	public String getArg(int index) {
+		return this.args[index];
+	}
+
 	@Override
 	public String toString() {
-		return this.type + ":" + String.join(":", this.args);
+		return this.type + DELIMITER + String.join(DELIMITER, this.args);
 	}
 
 	@Override
