@@ -32,6 +32,7 @@ public class SharedConstants
 	 * Morpion
 	 */
 	public static final String TIC_TAC_TOE = "tic_tac_toe";
+	public static final String TIC_TAC_TOE_DELIMITER = "/";
 	/**
 	 * Uno
 	 */
