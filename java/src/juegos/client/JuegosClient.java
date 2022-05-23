@@ -18,7 +18,7 @@ public class JuegosClient
 	public static final JuegosClient INSTANCE = new JuegosClient();
 
 	public final JFrame frame;
-	public final Thread readingThread;
+	public Thread readingThread;
 	public JPanel mainPanel;
 
 	public PrintWriter writer;
@@ -33,12 +33,6 @@ public class JuegosClient
 		frame.setVisible(true);
 
 		mainPanel = createConnectionPanel();
-
-		readingThread = new Thread(() -> {
-			while(true) {
-				read();
-			}
-		});
 	}
 
 	public static void main(String[] args) {
@@ -65,6 +59,11 @@ public class JuegosClient
 		INSTANCE.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		SharedConstants.info("Connexion établie !");
 
+		INSTANCE.readingThread = new Thread(() -> {
+			while(true) {
+				read();
+			}
+		});
 		INSTANCE.readingThread.start();
 
 		JuegosClient.sendCommand(CommandType.USERNAME.create(username));
@@ -106,7 +105,7 @@ public class JuegosClient
 				}
 				else {
 					SharedConstants.error("Type d'espace inconnu : " + command.getArg(0));
-					JuegosClient.sendCommand(CommandType.MOVE.create(ClientSpaceType.LOBBY.toString()));
+					JuegosClient.sendCommand(CommandType.ASK_MOVE.create(ClientSpaceType.LOBBY.toString()));
 				}
 			}
 		} catch(IOException e) {
@@ -115,6 +114,7 @@ public class JuegosClient
 			INSTANCE.mainPanel = createConnectionPanel();
 			refreshUI();
 			INSTANCE.readingThread.stop();
+			INSTANCE.readingThread = null;
 		}
 	}
 

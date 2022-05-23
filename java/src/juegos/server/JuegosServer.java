@@ -15,7 +15,8 @@ public class JuegosServer
 {
 	public static final JuegosServer INSTANCE = new JuegosServer();
 
-	private List<ServerSpace> spaces;
+	private final List<ServerSpace> spaces = new ArrayList<>();
+	private final List<ServerPlayer> players = new ArrayList<>();
 
 	public static void main(String[] args) {
 		INSTANCE.start(SharedConstants.DEFAULT_PORT);
@@ -29,16 +30,11 @@ public class JuegosServer
 	 * @return la liste des joueurs connectés au serveur.
 	 */
 	public static List<ServerPlayer> getPlayers() {
-		List<ServerPlayer> players = new ArrayList<>();
-		for(ServerSpace space : INSTANCE.spaces) {
-			players.addAll(space.getPlayers());
-		}
-		return players;
+		return INSTANCE.players;
 	}
 
 	private void start(int port) {
 		// Créer le serveur
-		this.spaces = new ArrayList<>();
 		this.spaces.add(new LobbyServerSpace());
 		try(ServerSocket serverSocket = new ServerSocket(port)) {
 			SharedConstants.info("Serveur démarré sur le port " + serverSocket.getLocalPort() + " !\nEn attente de connexions...");
@@ -55,11 +51,6 @@ public class JuegosServer
 		SharedConstants.info("Nouveau client connecté !");
 		try {
 			ServerPlayer player = new ServerPlayer(socket);
-			new Thread(() -> {
-				while(true) {
-					player.read();
-				}
-			}).start();
 
 			player.join(ServerSpaceType.LOBBY);
 			SharedConstants.info(player + " a rejoint le lobby.");

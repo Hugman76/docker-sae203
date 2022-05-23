@@ -24,7 +24,10 @@ public class SharedConstants
 	public static final String CONNECT_FOUR = "connect_four";
 	public static final int CONNECT_FOUR_HEIGHT = 6;
 	public static final int CONNECT_FOUR_WIDTH = 7;
-	public static final String CONNECT_FOUR_DELIMITER = "'";
+	public static final String CONNECT_FOUR_CELLS_DELIMITER = "'";
+	public static final String CONNECT_FOUR_CMD_CELL = "cell";
+	public static final String CONNECT_FOUR_CMD_CELL_ALL = "all";
+	public static final String CONNECT_FOUR_CMD_CELL_PUT = "put";
 	/**
 	 * Morpion
 	 */

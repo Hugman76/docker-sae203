@@ -14,13 +14,24 @@ import java.net.Socket;
 
 public class ServerPlayer
 {
+	private final Thread thread;
 	private final PrintWriter writer;
 	private final BufferedReader reader;
 	private String name;
+	private ServerSpace space;
 
 	public ServerPlayer(Socket socket) throws IOException {
-		writer = new PrintWriter(socket.getOutputStream(), true);
-		reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		this.writer = new PrintWriter(socket.getOutputStream(), true);
+		this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+		this.thread = new Thread(() -> {
+			while(true) {
+				this.read();
+			}
+		});
+		this.thread.start();
+
+		JuegosServer.getPlayers().add(this);
 	}
 
 	public String getName() {
@@ -31,12 +42,23 @@ public class ServerPlayer
 		this.name = name;
 	}
 
+	public ServerSpace getSpace() {
+		return space;
+	}
+
 	/**
 	 * Envoie une commande au client du joueur.
 	 */
 	public void sendCommand(Command command) {
 		SharedConstants.debug(this + " < " + command);
 		writer.println(command);
+	}
+
+	public void disconnect() {
+		this.space.handleDisconnection(this);
+		JuegosServer.getPlayers().remove(this);
+		SharedConstants.info(this + " s'est déconnecté du serveur.");
+		this.thread.stop();
 	}
 
 	/**
@@ -47,12 +69,13 @@ public class ServerPlayer
 		try {
 			s = this.reader.readLine();
 		} catch(IOException e) {
-			throw new RuntimeException(e);
+			this.disconnect();
+			return;
 		}
 		SharedConstants.debug("> " + s);
 		Command command = Command.parse(s);
 		if(CommandType.SPACE.equals(command.getType())) {
-			this.getSpace().handleCommand(this, command.getArgs());
+			this.space.handleCommand(this, command.getArgs());
 		}
 		else if(CommandType.ASK_MOVE.equals(command.getType())) {
 			String typeId = command.getArg(0);
@@ -68,8 +91,7 @@ public class ServerPlayer
 			this.setName(command.getArg(0));
 		}
 		else if(Command.QUIT.equals(command)) {
-			this.getSpace().handleDisconnection(this);
-			JuegosServer.getPlayers().remove(this);
+			this.disconnect();
 		}
 	}
 
@@ -80,6 +102,8 @@ public class ServerPlayer
 	 * @param spaceType le type d'espace dans lequel le joueur doit être placé
 	 */
 	public void join(ServerSpaceType spaceType) {
+		// TODO : fixer ça, y'as toujours une ConcurrentModificationException qui nous empêche de retirer les joueurs de la liste
+
 		if(spaceType == null) {
 			throw new IllegalArgumentException("spaceType ne peut pas être null");
 		}
@@ -100,13 +124,13 @@ public class ServerPlayer
 	 * @see #join(ServerSpaceType)
 	 */
 	private boolean join(ServerSpace space) {
-		SharedConstants.debug(this + " essaye de rejoindre " + space + " depuis " + getSpace());
+		SharedConstants.debug(this + " essaye de rejoindre " + space + " depuis " + this.space);
 		if(space.canAccept(this)) {
-			SharedConstants.debug(this + " va rejoindre " + space + " depuis " + getSpace());
-			if(this.getSpace() != null) this.getSpace().getPlayers().remove(this);
-			space.getPlayers().add(this);
+			SharedConstants.debug(this + " va rejoindre " + space + " depuis " + this.space);
+
+			this.space = space;
 			this.sendCommand(CommandType.MOVE.create(space.getType().toString()));
-			this.getSpace().handleConnection(this);
+			this.space.handleConnection(this);
 			return true;
 		}
 		else {
@@ -115,20 +139,10 @@ public class ServerPlayer
 	}
 
 	/**
-	 * @return l'espace auquel le joueur est rattaché.
-	 */
-	public ServerSpace getSpace() {
-		for(ServerSpace space : JuegosServer.getSpaces()) {
-			if(space.getPlayers().contains(this)) return space;
-		}
-		return null;
-	}
-
-	/**
 	 * @return vrai si le joueur est dans un espace qui est un jeu.
 	 */
 	public boolean isInGame() {
-		return getSpace().getType() != ServerSpaceType.LOBBY;
+		return this.space.getType() != ServerSpaceType.LOBBY;
 	}
 
 	@Override

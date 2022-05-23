@@ -13,8 +13,8 @@ RUN mkdir /java
 # Copie des fichiers
 COPY ./start-script.sh /root/
 COPY ./data /data
-COPY java/src/juegos/common java/src/juegos/common
-COPY java/src/juegos/server java/src/juegos/server
+COPY ./java/src/juegos/common java/src/juegos/common
+COPY ./java/src/juegos/server java/src/juegos/server
 
 # Exposer Apache
 EXPOSE 3306

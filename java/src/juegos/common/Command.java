@@ -57,7 +57,7 @@ public class Command
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof Command other)
-			return Objects.equals(this.type, other.type) && Arrays.equals(this.args, other.args);
+			return this.type.equals(other.type) && Arrays.equals(this.args, other.args);
 		else
 			return false;
 	}

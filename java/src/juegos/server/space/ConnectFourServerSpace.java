@@ -24,8 +24,10 @@ public class ConnectFourServerSpace extends ServerSpace
 
 	@Override
 	public void handleCommand(ServerPlayer player, String[] args) {
-		if(args[0].equals("tile") && args[1].equals("drop")) {
-			dropTile(player, Integer.parseInt(args[2]));
+		if(args[0].equals(SharedConstants.CONNECT_FOUR_CMD_CELL)) {
+			if(args[1].equals(SharedConstants.CONNECT_FOUR_CMD_CELL_PUT)) {
+				dropTile(player, Integer.parseInt(args[2]));
+			}
 		}
 	}
 
@@ -40,6 +42,18 @@ public class ConnectFourServerSpace extends ServerSpace
 			}
 		}
 		this.sendTileSetToClients();
+		this.checkWin();
+	}
+
+	public void checkWin() {
+		for(char[] line : this.tileSet) {
+			for(char tile : line) {
+				if(tile == '0') return;
+			}
+		}
+		for(ServerPlayer player : this.getPlayers()) {
+			player.join(ServerSpaceType.LOBBY);
+		}
 	}
 
 	public void sendTileSetToClients() {
@@ -50,10 +64,13 @@ public class ConnectFourServerSpace extends ServerSpace
 					s.append(this.tileSet[x][y]);
 				}
 				if(x < this.tileSet.length - 1) {
-					s.append(SharedConstants.CONNECT_FOUR_DELIMITER);
+					s.append(SharedConstants.CONNECT_FOUR_CELLS_DELIMITER);
 				}
 			}
-			this.sendCommand(player1, "tiles", s.toString());
+			this.sendCommand(player1,
+					SharedConstants.CONNECT_FOUR_CMD_CELL,
+					SharedConstants.CONNECT_FOUR_CMD_CELL_ALL,
+					s.toString());
 		});
 	}
 }

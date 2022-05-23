@@ -20,11 +20,9 @@ import java.util.List;
 public abstract class ServerSpace
 {
 	private final ServerSpaceType type;
-	private final List<ServerPlayer> players;
 
 	public ServerSpace(ServerSpaceType type) {
 		this.type = type;
-		this.players = new ArrayList<>();
 		JuegosServer.getSpaces().add(this);
 	}
 
@@ -39,7 +37,7 @@ public abstract class ServerSpace
 	 * @return la liste des joueurs de cet espace.
 	 */
 	public List<ServerPlayer> getPlayers() {
-		return players;
+		return JuegosServer.getPlayers().stream().filter(player -> player.getSpace() == this).toList();
 	}
 
 	/**
@@ -99,17 +97,18 @@ public abstract class ServerSpace
 	 * @param fallbackType le type d'espace vers lequel rediriger les joueurs
 	 */
 	public void destroy(ServerPlayer player, ServerSpaceType fallbackType) {
-		// TODO : fixer ça, y'as toujours une ConcurrentModificationException qui nous empêche de retirer les joueurs de la liste
-
 		JuegosServer.getSpaces().remove(this);
-		this.getPlayers().stream().filter(serverPlayer -> serverPlayer != player).forEach(player2 -> player2.join(fallbackType));
+		for(ServerPlayer player1 : this.getPlayers()) {
+			if(player1 != player) {
+				player1.join(fallbackType);
+			}
+		}
 	}
 
 	@Override
 	public String toString() {
 		return "ServerSpace{" +
 				"type=" + type +
-				", players=" + players +
 				'}';
 	}
 }
