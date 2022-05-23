@@ -41,6 +41,7 @@ public class ConnectFourServerSpace extends ServerSpace
 		for(int i = 0; i < this.players.length; i++) {
 			if(this.players[i] == null) {
 				this.players[i] = player;
+				this.sendCells(player);
 				break;
 			}
 		}
