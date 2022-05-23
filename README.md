@@ -4,8 +4,11 @@ Ce dépôt contient un docker qui lance un serveur multijoueur pour jouer à plu
 
 ## 🎮 Jeux disponibles
 - Puissance 4
+
+## En cours de développement
 - Morpion
-- Jeu des dames
+- Bataille
+- UNO
 
 ## ⚙️ Usage
 
