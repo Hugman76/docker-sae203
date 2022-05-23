@@ -41,14 +41,22 @@ public class ConnectFourClientSpace extends ClientSpace
 
 	public void updateCellsFromString(String cells) {
 		String[] cellsLines = cells.split(SharedConstants.ARGUMENT_DELIMITER);
-		for(int x = 0; x < cellsLines.length; x++) {
-			for(int y = 0; y < cellsLines[x].length(); y++) {
-				this.cells[x][y].setBackground(switch(cellsLines[x].charAt(y)) {
-					case '1' -> Color.RED;
-					case '2' -> Color.YELLOW;
+		int x = 0;
+		int y = 0;
+		for(int setNumber = 0; setNumber < cellsLines.length; setNumber++) {
+			y = 0;
+			for(int charNumber = 0; charNumber < cellsLines[setNumber].length(); charNumber++) {
+				int i;
+				if(cellsLines[setNumber].charAt(charNumber) == '-') i = -Integer.parseInt(String.valueOf(cellsLines[setNumber].charAt(++charNumber)));
+				else i = Integer.parseInt(String.valueOf(cellsLines[setNumber].charAt(charNumber)));
+				this.cells[x][y].setBackground(switch(i) {
+					case 0 -> Color.RED;
+					case 1 -> Color.YELLOW;
 					default -> Color.WHITE;
 				});
+				y++;
 			}
+			x++;
 		}
 	}
 

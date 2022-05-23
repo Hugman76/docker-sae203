@@ -136,8 +136,8 @@ public class ServerPlayer
 			ServerSpace previousSpace = this.space;
 			this.space = space;
 			if(previousSpace != null) previousSpace.handleLeave(this);
-			this.space.handleJoin(this);
 			this.sendCommand(CommandType.MOVE.create(space.getType().toString()));
+			this.space.handleJoin(this);
 			return true;
 		}
 		else {

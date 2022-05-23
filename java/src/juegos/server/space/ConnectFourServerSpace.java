@@ -11,69 +11,79 @@ import java.util.Arrays;
  */
 public class ConnectFourServerSpace extends ServerSpace
 {
-	private final char[][] tileSet;
-	private ServerPlayer player1;
-	private ServerPlayer player2;
-	private boolean player1Turn;
+	private static final int EMPTY_CELL = -1;
+	private final int[][] tileSet;
+	private final ServerPlayer[] players;
+	private int turn;
+
+	public ConnectFourServerSpace(int maxPlayers) {
+		super(ServerSpaceType.CONNECT_FOUR);
+		this.tileSet = new int[SharedConstants.CONNECT_FOUR_WIDTH][SharedConstants.CONNECT_FOUR_HEIGHT];
+		for(int[] charLine : this.tileSet) {
+			Arrays.fill(charLine, EMPTY_CELL);
+		}
+		this.turn = 0;
+		this.players = new ServerPlayer[maxPlayers];
+	}
 
 	public ConnectFourServerSpace() {
-		super(ServerSpaceType.CONNECT_FOUR);
-		this.tileSet = new char[SharedConstants.CONNECT_FOUR_WIDTH][SharedConstants.CONNECT_FOUR_HEIGHT];
-		for(char[] charLine : this.tileSet) {
-			Arrays.fill(charLine, '0');
-		}
+		this(2);
 	}
 
 	@Override
 	public boolean canAccept(ServerPlayer player) {
-		return this.getPlayers().size() <= 2;
+		return this.getPlayers().size() <= this.players.length;
 	}
 
 	@Override
 	public void handleJoin(ServerPlayer player) {
 		super.handleJoin(player);
-		if(this.player1 == null) {
-			this.player1 = player;
+		for(int i = 0; i < this.players.length; i++) {
+			if(this.players[i] == null) {
+				this.players[i] = player;
+				break;
+			}
 		}
-		else if(this.player2 == null) {
-			this.player2 = player;
-		}
-		else {
-			return;
-		}
-		this.sendCells(player);
 	}
 
 	@Override
 	public void handleLeave(ServerPlayer player) {
 		super.handleLeave(player);
-		if(this.player1 == player) {
-			this.player1 = null;
-		}
-		else if(this.player2 == player) {
-			this.player2 = null;
-		}
+		this.players[this.getPlayerIndex(player)] = null;
 	}
 
 	@Override
 	public void handleCommand(ServerPlayer player, String[] args) {
 		if(args[0].equals(SharedConstants.CONNECT_FOUR_CMD_CELL)) {
 			if(args[1].equals(SharedConstants.CONNECT_FOUR_CMD_CELL_PUT)) {
-				dropTile(player, Integer.parseInt(args[2]));
+				dropTile(getPlayerIndex(player), Integer.parseInt(args[2]));
 			}
 		}
 	}
 
+	public int getPlayerIndex(ServerPlayer player) {
+		for(int i = 0; i < this.players.length; i++) {
+			if(this.players[i] == player) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public void nextTurn() {
+		this.turn = (this.turn + 1) % this.players.length;
+	}
+
 	/**
 	 * Fait tomber une pièce dans la colonne donnée.
-	 * @param player le joueur qui joue
+	 * @param i le numéro du joueur qui joue
 	 * @param x la colonne
 	 */
-	public void dropTile(ServerPlayer player, int x) {
+	public void dropTile(int i, int x) {
 		for(int y = 0; y < this.tileSet[x].length; y++) {
-			if(this.tileSet[x][y] == '0') {
-				this.tileSet[x][y] = this.player1 == player ? '1' : '2';
-				this.player1Turn = !this.player1Turn;
+			if(this.tileSet[x][y] == EMPTY_CELL) {
+				this.tileSet[x][y] = i;
+				this.nextTurn();
 				break;
 			}
 		}
@@ -84,10 +94,10 @@ public class ConnectFourServerSpace extends ServerSpace
 	public void sendLocks(ServerPlayer player) {
 		boolean[] locked = new boolean[this.tileSet.length];
 		Arrays.fill(locked, true);
-		if((player1Turn && player == player1) || (!player1Turn && player == player2)) {
+		if(this.turn == this.getPlayerIndex(player)) {
 			for(int x = 0; x < this.tileSet.length; x++) {
 				for(int y = 0; y < this.tileSet[x].length; y++) {
-					if(this.tileSet[x][y] == '0') {
+					if(this.tileSet[x][y] == EMPTY_CELL) {
 						locked[x] = false;
 						break;
 					}
@@ -101,14 +111,14 @@ public class ConnectFourServerSpace extends ServerSpace
 			if(locked[i]) lockedInts.append(i).append(SharedConstants.ARGUMENT_DELIMITER);
 			else unlockedInts.append(i).append(SharedConstants.ARGUMENT_DELIMITER);
 		}
-		if(!lockedInts.isEmpty())   this.sendCommand(SharedConstants.CONNECT_FOUR_CMD_COLUMN, SharedConstants.CONNECT_FOUR_CMD_COLUMN_LOCK, lockedInts.toString(),   String.valueOf(true));
-		if(!unlockedInts.isEmpty()) this.sendCommand(SharedConstants.CONNECT_FOUR_CMD_COLUMN, SharedConstants.CONNECT_FOUR_CMD_COLUMN_LOCK, unlockedInts.toString(), String.valueOf(false));
+		if(!lockedInts.isEmpty())   this.sendCommand(player, SharedConstants.CONNECT_FOUR_CMD_COLUMN, SharedConstants.CONNECT_FOUR_CMD_COLUMN_LOCK, lockedInts.toString(),   String.valueOf(true));
+		if(!unlockedInts.isEmpty()) this.sendCommand(player, SharedConstants.CONNECT_FOUR_CMD_COLUMN, SharedConstants.CONNECT_FOUR_CMD_COLUMN_LOCK, unlockedInts.toString(), String.valueOf(false));
 	}
 
 	public void checkWin() {
-		for(char[] line : this.tileSet) {
-			for(char tile : line) {
-				if(tile == '0') return;
+		for(int[] line : this.tileSet) {
+			for(int tile : line) {
+				if(tile == EMPTY_CELL) return;
 			}
 		}
 		for(ServerPlayer player : this.getPlayers()) {
