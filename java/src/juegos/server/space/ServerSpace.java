@@ -1,15 +1,9 @@
 package juegos.server.space;
 
 import juegos.common.CommandType;
-<<<<<<< Updated upstream
-=======
-import juegos.common.SharedConstants;
-import juegos.common.UnoCarte;
->>>>>>> Stashed changes
 import juegos.server.JuegosServer;
 import juegos.server.ServerPlayer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

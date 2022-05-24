@@ -2,6 +2,7 @@ package juegos.client.space;
 
 import juegos.client.JuegosClient;
 import juegos.common.CommandType;
+import juegos.common.SharedConstants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +23,7 @@ public class LobbyClientSpace extends ClientSpace
 		JPanel panel = new JPanel();
 
 		for(ClientSpaceType spaceType : ClientSpaceType.TYPES) {
-			if(spaceType != ClientSpaceType.LOBBY) {
+			if(spaceType.isSelectable() || SharedConstants.DEBUG) {
 				JButton button = new JButton(spaceType.getName());
 				button.addActionListener(e -> {
 					JuegosClient.sendCommand(CommandType.ASK_MOVE.create(spaceType.toString()));
