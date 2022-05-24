@@ -38,6 +38,7 @@ public class TTTServerSpace extends ServerSpace
         }
     }
 
+
     public char getPlayerChar(ServerPlayer player) {
         return this.getPlayers().get(0) == player ? 'X' : 'O';
     }
@@ -49,6 +50,8 @@ public class TTTServerSpace extends ServerSpace
     public void place(int lig, int col, char c)
     {
         this.tabChar[lig][col] = c;
+
+
         for (ServerPlayer player : this.getPlayers()) {
             this.sendCommand(player, "set", String.valueOf(lig), String.valueOf(col), String.valueOf(this.tabChar[lig][col]));
         }
@@ -71,19 +74,20 @@ public class TTTServerSpace extends ServerSpace
         return nbVide;
     }
 
-    /*public boolean checkWin() {
+    public boolean checkWin() {
         boolean win = false;
+        ServerPlayer player = this.player[2];
         if (
-                        tabChar[1][0] == tabChar[1][1] && tabChar[1][0] == tabChar[1][2] && tabChar[1][0] == this.getPlayerChar() ||
-                        tabChar[2][0] == tabChar[2][1] && tabChar[1][0] == tabChar[2][2] && tabChar[2][0] == this.getPlayerChar() ||
-                        tabChar[0][0] == tabChar[0][1] && tabChar[1][0] == tabChar[0][2] && tabChar[0][0] == this.getPlayerChar() ||
+                        tabChar[1][0] == tabChar[1][1] && tabChar[1][0] == tabChar[1][2] && tabChar[1][0] == this.getPlayerChar(player) ||
+                        tabChar[2][0] == tabChar[2][1] && tabChar[1][0] == tabChar[2][2] && tabChar[2][0] == this.getPlayerChar(player) ||
+                        tabChar[0][0] == tabChar[0][1] && tabChar[1][0] == tabChar[0][2] && tabChar[0][0] == this.getPlayerChar(player) ||
 
-                        tabChar[0][0] == tabChar[1][0] && tabChar[1][0] == tabChar[2][0] && tabChar[0][0] == this.getPlayerChar() ||
-                        tabChar[0][1] == tabChar[1][1] && tabChar[1][0] == tabChar[2][1] && tabChar[0][1] == this.getPlayerChar() ||
-                        tabChar[0][2] == tabChar[1][2] && tabChar[1][0] == tabChar[2][2] && tabChar[0][2]== this.getPlayerChar() ||
+                        tabChar[0][0] == tabChar[1][0] && tabChar[1][0] == tabChar[2][0] && tabChar[0][0] == this.getPlayerChar(player) ||
+                        tabChar[0][1] == tabChar[1][1] && tabChar[1][0] == tabChar[2][1] && tabChar[0][1] == this.getPlayerChar(player) ||
+                        tabChar[0][2] == tabChar[1][2] && tabChar[1][0] == tabChar[2][2] && tabChar[0][2]== this.getPlayerChar(player) ||
 
-                        tabChar[0][0] == tabChar[1][1] && tabChar[0][0] == tabChar[2][2] && tabChar[0][0] == this.getPlayerChar() ||
-                        tabChar[2][0] == tabChar[1][1] && tabChar[2][0] == tabChar[0][2] && tabChar[2][0] == this.getPlayerChar()
+                        tabChar[0][0] == tabChar[1][1] && tabChar[0][0] == tabChar[2][2] && tabChar[0][0] == this.getPlayerChar(player) ||
+                        tabChar[2][0] == tabChar[1][1] && tabChar[2][0] == tabChar[0][2] && tabChar[2][0] == this.getPlayerChar(player)
         )
         {
             win = true;
@@ -92,11 +96,13 @@ public class TTTServerSpace extends ServerSpace
         {
             if (getNbVide() == 0) {win = false;}
         }
-
-        for(ServerPlayer player : this.getPlayers())
-            player.leave();
-
         return win;
-    }*/
+
+    }
+
+    public boolean checkVerticalWin(int col)
+    {
+
+    }
 }
 

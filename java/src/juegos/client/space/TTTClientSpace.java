@@ -26,8 +26,10 @@ public class TTTClientSpace extends ClientSpace implements ActionListener
 	}
 
 	public void setCase(int lig, int col, String forme) {
-
-		this.tabBtnCase[lig][col].setText(String.valueOf(forme));
+		switch (forme){
+			case "X" -> this.tabBtnCase[lig][col].setIcon(new ImageIcon("./java/src/images/ttt/croix.png"));
+			case "O" -> this.tabBtnCase[lig][col].setIcon(new ImageIcon("./java/src/images/ttt/cercle.png"));
+		}
 	}
 
 	@Override
@@ -39,11 +41,21 @@ public class TTTClientSpace extends ClientSpace implements ActionListener
 		JPanel panelJ1 = new JPanel();
 		JPanel panelJ2 = new JPanel();
 
+		panelJ1.setPreferredSize(new Dimension(600,50));
+		panelJ1.setMaximumSize(panelJ1.getPreferredSize());
+		panelJ1.setMinimumSize(panelJ1.getPreferredSize());
+
+		panelJ2.setPreferredSize(new Dimension(600,50));
+		panelJ2.setMaximumSize(panelJ1.getPreferredSize());
+		panelJ2.setMinimumSize(panelJ1.getPreferredSize());
+
 		for(int lig = 0; lig < this.tabBtnCase.length; lig++)
 			for(int col = 0; col < this.tabBtnCase.length; col++)
 			{
 				this.tabBtnCase[lig][col] = new JButton(" ");
 				this.tabBtnCase[lig][col].setBackground(Color.WHITE);
+				this.tabBtnCase[lig][col].setPreferredSize(new Dimension(120,120));
+
 			}
 
 		JLabel lblJ1 = new JLabel("quoi");
@@ -69,6 +81,7 @@ public class TTTClientSpace extends ClientSpace implements ActionListener
 		for(int lig = 0; lig < this.tabBtnCase.length; lig++)
 			for(int col = 0; col < this.tabBtnCase.length; col++)
 				this.tabBtnCase[lig][col].addActionListener(this);
+
 
 		return mainPanel;
 	}

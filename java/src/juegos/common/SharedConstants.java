@@ -36,7 +36,6 @@ public class SharedConstants
 	 * <a href="https://fr.wikipedia.org/wiki/Morpion_(jeu)">Morpion</a>
 	 */
 	public static final String TIC_TAC_TOE = "tic_tac_toe";
-	public static final String TIC_TAC_TOE_DELIMITER = "/";
 	/**
 	 * <a href="https://fr.wikipedia.org/wiki/Bataille_(jeu)">Bataille</a>
 	 */
