@@ -1,5 +1,6 @@
 package juegos.client.space;
 
+import juegos.client.util.GUIUtils;
 import juegos.common.SharedConstants;
 
 import javax.swing.*;
@@ -10,25 +11,38 @@ import java.awt.event.ActionListener;
 public class TTTClientSpace extends ClientSpace implements ActionListener
 {
 	public  JButton[][] tabBtnCase;
-	private final String forme;
 
 	public TTTClientSpace() {
 		super(ClientSpaceType.TIC_TAC_TOE);
 		this.tabBtnCase = new JButton[3][3];
-		this.forme = " ";
 	}
 
 	@Override
 	public void handleCommand(String[] args) {
-		if (args[0].equals("set")) {
-			this.setCase(Integer.parseInt(args[1]), Integer.parseInt(args[2]), args[3]);
+		if(args[0].equals(SharedConstants.TIC_TAC_TOE_CMD_CELL)) {
+			if(args[1].equals(SharedConstants.TIC_TAC_TOE_CMD_CELL_ALL)) {
+				this.updateCellsFromString(args[2]);
+			}
+		}
+		if(args[0].equals(SharedConstants.WIN)) {
+			GUIUtils.showPopup("Victoire !", "Vous avez gagné !");
+		}
+		if(args[0].equals(SharedConstants.LOSE)) {
+			GUIUtils.showPopup("Défaite...", "Vous avez perdu...\nLe vainqueur est " + args[1] + ".");
 		}
 	}
 
-	public void setCase(int lig, int col, String forme) {
-		switch (forme){
-			case "X" -> this.tabBtnCase[lig][col].setIcon(new ImageIcon("./java/src/images/ttt/croix.png"));
-			case "O" -> this.tabBtnCase[lig][col].setIcon(new ImageIcon("./java/src/images/ttt/cercle.png"));
+	public void updateCellsFromString(String cells) {
+		String[] cellsLines = cells.split(SharedConstants.ARGUMENT_DELIMITER);
+		int x = 0;
+		int y;
+		for(String cellsLine : cellsLines) {
+			y = 0;
+			for(int charNumber = 0; charNumber < cellsLine.length(); charNumber++) {
+				this.tabBtnCase[x][y].setIcon(new ImageIcon("data/images/ttt/" + Character.toLowerCase(cellsLine.charAt(charNumber)) + ".png"));
+				y++;
+			}
+			x++;
 		}
 	}
 
@@ -50,12 +64,10 @@ public class TTTClientSpace extends ClientSpace implements ActionListener
 		panelJ2.setMinimumSize(panelJ1.getPreferredSize());
 
 		for(int lig = 0; lig < this.tabBtnCase.length; lig++)
-			for(int col = 0; col < this.tabBtnCase.length; col++)
-			{
+			for(int col = 0; col < this.tabBtnCase.length; col++) {
 				this.tabBtnCase[lig][col] = new JButton(" ");
 				this.tabBtnCase[lig][col].setBackground(Color.WHITE);
 				this.tabBtnCase[lig][col].setPreferredSize(new Dimension(120,120));
-
 			}
 
 		JLabel lblJ1 = new JLabel("quoi");
@@ -92,11 +104,9 @@ public class TTTClientSpace extends ClientSpace implements ActionListener
 		for(int lig = 0; lig < this.tabBtnCase.length; lig++)
 			for(int col = 0; col < this.tabBtnCase.length; col++)
 				if (e.getSource() == tabBtnCase[lig][col])
-				{
-					this.sendCommand("set", String.valueOf(lig), String.valueOf(col));
-				}
-
+					this.sendCommand(SharedConstants.TIC_TAC_TOE_CMD_CELL,
+							SharedConstants.TIC_TAC_TOE_CMD_CELL_PUT,
+							String.valueOf(lig),
+							String.valueOf(col));
 	}
-
-
 }

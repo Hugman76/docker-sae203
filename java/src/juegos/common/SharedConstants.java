@@ -12,10 +12,12 @@ public class SharedConstants
 	/**
 	 * Cette variable est utilisée pour envoyer plus d'informations utiles au développement dans les logs.
 	 */
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
 	public static final String COMMAND_DELIMITER = ":";
 	public static final String ARGUMENT_DELIMITER = "'";
+	public static final String WIN = "win";
+	public static final String LOSE = "lose";
 
 	public static final String LOBBY = "lobby";
 
@@ -27,15 +29,17 @@ public class SharedConstants
 	public static final int CONNECT_FOUR_WIDTH = 7;
 	public static final String CONNECT_FOUR_CMD_CELL = "cell";
 	public static final String CONNECT_FOUR_CMD_CELL_ALL = "all";
-	public static final String CONNECT_FOUR_CMD_CELL_PUT = "put";
+	public static final String CONNECT_FOUR_CMD_CELL_DROP = "drop";
 	public static final String CONNECT_FOUR_CMD_COLUMN = "column";
 	public static final String CONNECT_FOUR_CMD_COLUMN_LOCK = "lock";
-	public static final String CONNECT_FOUR_CMD_WIN = "win";
-	public static final String CONNECT_FOUR_CMD_LOSE = "lose";
 	/**
 	 * <a href="https://fr.wikipedia.org/wiki/Morpion_(jeu)">Morpion</a>
 	 */
 	public static final String TIC_TAC_TOE = "tic_tac_toe";
+	public static final String TIC_TAC_TOE_CMD_CELL = "cell";
+	public static final String TIC_TAC_TOE_CMD_CELL_ALL = "all";
+	public static final String TIC_TAC_TOE_CMD_CELL_PUT = "put";
+
 	/**
 	 * <a href="https://fr.wikipedia.org/wiki/Bataille_(jeu)">Bataille</a>
 	 */

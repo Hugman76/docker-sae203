@@ -1,108 +1,144 @@
 package juegos.server.space;
 
+import juegos.common.SharedConstants;
 import juegos.server.ServerPlayer;
 
 import java.util.Arrays;
 
 public class TTTServerSpace extends ServerSpace
 {
-    private char[][] tabChar;
-    private ServerPlayer[] player;
+    private static final char EMPTY_CELl = ' ';
+    private static final char PLAYER_1_CELl = 'X';
+    private static final char PLAYER_2_CELl = 'O';
+    private final char[][] tabChar;
+    private final ServerPlayer[] players;
     private int turn;
 
     public TTTServerSpace() {
         super(ServerSpaceType.TIC_TAC_TOE);
 
         this.tabChar = new char[3][3];
-        for(char[] line : tabChar)
-            Arrays.fill(line, ' ');
+        for(char[] line : tabChar) Arrays.fill(line, ' ');
 
-        this.player = new ServerPlayer[2];
-        this.turn =0;
+        this.turn = 0;
+        this.players = new ServerPlayer[2];
     }
 
     @Override
     public boolean canAccept(ServerPlayer player) {
-        return this.getPlayers().size() <= this.player.length;
+        return this.getPlayers().size() <= this.players.length;
     }
 
     @Override
-    public void handleCommand(ServerPlayer player, String[] args)
-    {
-        if(args[0].equals("set"))
-        {
-            int lig = Integer.parseInt(args[1]);
-            int col = Integer.parseInt(args[2]);
-            if(canPlace(lig, col))
-                place(lig, col, getPlayerChar(player));
-        }
-    }
-
-
-    public char getPlayerChar(ServerPlayer player) {
-        return this.getPlayers().get(0) == player ? 'X' : 'O';
-    }
-
-    public boolean canPlace(int lig, int col) {
-        return this.tabChar[lig][col] == ' ';
-    }
-
-    public void place(int lig, int col, char c)
-    {
-        this.tabChar[lig][col] = c;
-
-
-        for (ServerPlayer player : this.getPlayers()) {
-            this.sendCommand(player, "set", String.valueOf(lig), String.valueOf(col), String.valueOf(this.tabChar[lig][col]));
-        }
-    }
-
-    public void nextTurn()
-    {
-        this.turn = (this.turn + 1) % this.player.length;
-    }
-
-    public int getNbVide()
-    {
-        int nbVide = 0;
-
-        for (char[] line : this.tabChar)
-            if (Arrays.toString(line).equals(" "))
-            {
-                nbVide++;
+    public void handleCommand(ServerPlayer player, String[] args) {
+        if(args[0].equals(SharedConstants.TIC_TAC_TOE_CMD_CELL)) {
+            if(args[1].equals(SharedConstants.TIC_TAC_TOE_CMD_CELL_PUT)) {
+                int lig = Integer.parseInt(args[2]);
+                int col = Integer.parseInt(args[3]);
+                placeCell(lig, col, getPlayerChar(getPlayerIndex(player)));
             }
-        return nbVide;
+        }
     }
 
-    public boolean checkWin() {
-        boolean win = false;
-        ServerPlayer player = this.player[2];
-        if (
-                        tabChar[1][0] == tabChar[1][1] && tabChar[1][0] == tabChar[1][2] && tabChar[1][0] == this.getPlayerChar(player) ||
-                        tabChar[2][0] == tabChar[2][1] && tabChar[1][0] == tabChar[2][2] && tabChar[2][0] == this.getPlayerChar(player) ||
-                        tabChar[0][0] == tabChar[0][1] && tabChar[1][0] == tabChar[0][2] && tabChar[0][0] == this.getPlayerChar(player) ||
-
-                        tabChar[0][0] == tabChar[1][0] && tabChar[1][0] == tabChar[2][0] && tabChar[0][0] == this.getPlayerChar(player) ||
-                        tabChar[0][1] == tabChar[1][1] && tabChar[1][0] == tabChar[2][1] && tabChar[0][1] == this.getPlayerChar(player) ||
-                        tabChar[0][2] == tabChar[1][2] && tabChar[1][0] == tabChar[2][2] && tabChar[0][2]== this.getPlayerChar(player) ||
-
-                        tabChar[0][0] == tabChar[1][1] && tabChar[0][0] == tabChar[2][2] && tabChar[0][0] == this.getPlayerChar(player) ||
-                        tabChar[2][0] == tabChar[1][1] && tabChar[2][0] == tabChar[0][2] && tabChar[2][0] == this.getPlayerChar(player)
-        )
-        {
-            win = true;
+    @Override
+    public void handleJoin(ServerPlayer player) {
+        super.handleJoin(player);
+        for(int i = 0; i < this.players.length; i++) {
+            if(this.players[i] == null) {
+                this.players[i] = player;
+                this.sendCells(player);
+                break;
+            }
         }
-        else
-        {
-            if (getNbVide() == 0) {win = false;}
-        }
-        return win;
-
     }
 
-    public boolean checkVerticalWin(int col)
-    {
+    @Override
+    public void handleLeave(ServerPlayer player) {
+        super.handleLeave(player);
+        this.players[this.getPlayerIndex(player)] = null;
+    }
 
+    public int getPlayerIndex(ServerPlayer player) {
+        for(int i = 0; i < this.players.length; i++)
+            if(this.players[i] == player)
+                return i;
+        return -1;
+    }
+
+    public char getPlayerChar(int playerIndex) {
+        return playerIndex == 0 ? PLAYER_1_CELl : PLAYER_2_CELl;
+    }
+
+    public void placeCell(int lig, int col, char c) {
+        if(this.tabChar[lig][col] == EMPTY_CELl) {
+            this.tabChar[lig][col] = c;
+            this.nextTurn();
+            this.getPlayers().forEach(this::sendCells);
+            this.checkWin();
+        }
+    }
+
+    public void nextTurn() {
+        this.turn = (this.turn + 1) % this.players.length;
+    }
+
+    public void win(int playerIndex) {
+        ServerPlayer player = this.players[playerIndex];
+        Arrays.stream(this.players)
+                .filter(p -> p != player && p != null)
+                .forEach(p -> this.sendCommand(p, SharedConstants.LOSE, player.getName()));
+        this.sendCommand(player, SharedConstants.WIN);
+        player.join(ServerSpaceType.LOBBY);
+        this.destroy(player);
+    }
+
+    public void checkWin() {
+        for(int playerIndex = 0; playerIndex < this.players.length; playerIndex++) {
+            this.checkVerticalWins(playerIndex);
+            this.checkHorizontalWins(playerIndex);
+        }
+    }
+
+    public void checkVerticalWins(int playerIndex) {
+        // TODO: fix
+        for(int col = 0; col < this.tabChar[0].length; col++) {
+            for(int lig = 0; lig < 3; lig++) {
+                if(tabChar[lig][col] != this.getPlayerChar(playerIndex))
+                    return;
+            }
+            this.win(playerIndex);
+        }
+    }
+
+    public void checkHorizontalWins(int playerIndex) {
+        // TODO: fix
+        for(int lig = 0; lig < this.tabChar.length; lig++) {
+            for(int col = 0; col < 3; col++) {
+                if(tabChar[lig][col] != this.getPlayerChar(playerIndex))
+                    return;
+            }
+            this.win(playerIndex);
+        }
+    }
+
+    public String cellsToString(ServerPlayer player) {
+        StringBuilder s = new StringBuilder();
+        for(int x = 0; x < this.tabChar.length; x++) {
+            for(int y = 0; y < this.tabChar.length; y++) {
+                s.append(this.tabChar[x][y]);
+            }
+            if(x < this.tabChar.length - 1) {
+                s.append(SharedConstants.ARGUMENT_DELIMITER);
+            }
+        }
+        return s.toString();
+    }
+
+    public void sendCells(ServerPlayer player) {
+        this.sendCommand(player,
+                SharedConstants.CONNECT_FOUR_CMD_CELL,
+                SharedConstants.CONNECT_FOUR_CMD_CELL_ALL,
+                this.cellsToString(player));
     }
 }
 

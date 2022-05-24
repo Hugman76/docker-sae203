@@ -1,7 +1,5 @@
 package juegos.server.space;
 
-import juegos.common.Command;
-import juegos.common.CommandType;
 import juegos.common.SharedConstants;
 import juegos.server.ServerPlayer;
 
@@ -59,8 +57,8 @@ public class ConnectFourServerSpace extends ServerSpace
 	@Override
 	public void handleCommand(ServerPlayer player, String[] args) {
 		if(args[0].equals(SharedConstants.CONNECT_FOUR_CMD_CELL)) {
-			if(args[1].equals(SharedConstants.CONNECT_FOUR_CMD_CELL_PUT)) {
-				dropTile(getPlayerIndex(player), Integer.parseInt(args[2]));
+			if(args[1].equals(SharedConstants.CONNECT_FOUR_CMD_CELL_DROP)) {
+				this.dropTile(getPlayerIndex(player), Integer.parseInt(args[2]));
 			}
 		}
 	}
@@ -80,19 +78,23 @@ public class ConnectFourServerSpace extends ServerSpace
 
 	/**
 	 * Fait tomber une pièce dans la colonne donnée.
-	 * @param i le numéro du joueur qui joue
+	 * @param playerIndex le numéro du joueur qui joue
 	 * @param x la colonne
 	 */
-	public void dropTile(int i, int x) {
+	public void dropTile(int playerIndex, int x) {
+		boolean canPlace = false;
 		for(int y = 0; y < this.tileSet[x].length; y++) {
 			if(this.tileSet[x][y] == EMPTY_CELL) {
-				this.tileSet[x][y] = i;
-				this.nextTurn();
+				this.tileSet[x][y] = playerIndex;
+				canPlace = true;
 				break;
 			}
 		}
-		this.sendCellsToEveryone();
-		this.checkWin();
+		if(canPlace) {
+			this.nextTurn();
+			this.getPlayers().forEach(this::sendCells);
+			this.checkWin();
+		}
 	}
 
 	public void sendLocks(ServerPlayer player) {
@@ -122,32 +124,30 @@ public class ConnectFourServerSpace extends ServerSpace
 	public void win(int playerIndex) {
 		ServerPlayer player = this.players[playerIndex];
 		Arrays.stream(this.players)
-				.filter(player1 -> player1 != player)
-				.forEach(player1 -> {
-					this.sendCommand(player1, SharedConstants.CONNECT_FOUR_CMD_LOSE, player.getName());
-					player1.leave();
-				});
-		this.sendCommand(player, SharedConstants.CONNECT_FOUR_CMD_WIN);
-		player.leave();
+				.filter(p -> p != player && p != null)
+				.forEach(p -> this.sendCommand(p, SharedConstants.LOSE, player.getName()));
+		this.sendCommand(player, SharedConstants.WIN);
+		player.join(ServerSpaceType.LOBBY);
+		this.destroy(player);
 	}
 
 	public void checkWin() {
-		this.checkDiagonalWins();
 		for(int x = 0; x < SharedConstants.CONNECT_FOUR_WIDTH; x++) {
 			this.checkVerticalWin(x);
 		}
 		for(int y = 0; y < SharedConstants.CONNECT_FOUR_HEIGHT; y++) {
 			this.checkHorizontalWin(y);
 		}
+		this.checkDiagonalWins();
 	}
 
-	public void checkHorizontalWin(int y) {
+	public void checkVerticalWin(int x) {
 		int consecutive = 1;
 		int playerIndex = EMPTY_CELL;
-		for(int x = 0; x < SharedConstants.CONNECT_FOUR_WIDTH; x++) {
+		for(int y = 0; y < SharedConstants.CONNECT_FOUR_HEIGHT; y++) {
 			int cellValue = this.tileSet[x][y];
 			if(playerIndex != cellValue || cellValue == EMPTY_CELL) {
-				consecutive = 1;
+				consecutive = 0;
 				playerIndex = cellValue;
 			} else {
 				consecutive++;
@@ -158,13 +158,13 @@ public class ConnectFourServerSpace extends ServerSpace
 		}
 	}
 
-	public void checkVerticalWin(int x) {
+	public void checkHorizontalWin(int y) {
 		int consecutive = 1;
 		int playerIndex = EMPTY_CELL;
-		for(int y = 0; y < SharedConstants.CONNECT_FOUR_HEIGHT; y++) {
+		for(int x = 0; x < SharedConstants.CONNECT_FOUR_WIDTH; x++) {
 			int cellValue = this.tileSet[x][y];
 			if(playerIndex != cellValue || cellValue == EMPTY_CELL) {
-				consecutive = 0;
+				consecutive = 1;
 				playerIndex = cellValue;
 			} else {
 				consecutive++;
@@ -201,11 +201,7 @@ public class ConnectFourServerSpace extends ServerSpace
 		}
 	}
 
-	public void sendCellsToEveryone() {
-		this.getPlayers().forEach(this::sendCells);
-	}
-
-	public void sendCells(ServerPlayer player) {
+	public String cellsToString(ServerPlayer player) {
 		StringBuilder s = new StringBuilder();
 		for(int x = 0; x < this.tileSet.length; x++) {
 			for(int y = 0; y < this.tileSet[x].length; y++) {
@@ -215,10 +211,14 @@ public class ConnectFourServerSpace extends ServerSpace
 				s.append(SharedConstants.ARGUMENT_DELIMITER);
 			}
 		}
+		return s.toString();
+	}
+
+	public void sendCells(ServerPlayer player) {
 		this.sendCommand(player,
 				SharedConstants.CONNECT_FOUR_CMD_CELL,
 				SharedConstants.CONNECT_FOUR_CMD_CELL_ALL,
-				s.toString());
+				this.cellsToString(player));
 		this.sendLocks(player);
 	}
 }

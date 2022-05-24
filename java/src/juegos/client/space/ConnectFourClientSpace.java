@@ -38,10 +38,10 @@ public class ConnectFourClientSpace extends ClientSpace
 				}
 			}
 		}
-		if(args[0].equals(SharedConstants.CONNECT_FOUR_CMD_WIN)) {
+		if(args[0].equals(SharedConstants.WIN)) {
 			GUIUtils.showPopup("Victoire !", "Vous avez gagné !");
 		}
-		if(args[0].equals(SharedConstants.CONNECT_FOUR_CMD_LOSE)) {
+		if(args[0].equals(SharedConstants.LOSE)) {
 			GUIUtils.showPopup("Défaite...", "Vous avez perdu...\nLe vainqueur est " + args[1] + ".");
 		}
 	}
@@ -49,7 +49,7 @@ public class ConnectFourClientSpace extends ClientSpace
 	public void updateCellsFromString(String cells) {
 		String[] cellsLines = cells.split(SharedConstants.ARGUMENT_DELIMITER);
 		int x = 0;
-		int y = 0;
+		int y;
 		for(String cellsLine : cellsLines) {
 			y = 0;
 			for(int charNumber = 0; charNumber < cellsLine.length(); charNumber++) {
@@ -92,7 +92,7 @@ public class ConnectFourClientSpace extends ClientSpace
 			int finalX = x;
 			this.buttons[x].addActionListener(e -> this.sendCommand(
 					SharedConstants.CONNECT_FOUR_CMD_CELL,
-					SharedConstants.CONNECT_FOUR_CMD_CELL_PUT,
+					SharedConstants.CONNECT_FOUR_CMD_CELL_DROP,
 					String.valueOf(finalX)));
 			gamePanel.add(this.buttons[x]);
 		}

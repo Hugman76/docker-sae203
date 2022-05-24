@@ -106,7 +106,7 @@ public abstract class ServerSpace
 	 */
 	public void destroy(ServerPlayer player, ServerSpaceType fallbackType) {
 		if(JuegosServer.getSpaces().contains(this)) {
-			boolean b = JuegosServer.deleteSpace(this);
+			JuegosServer.deleteSpace(this);
 			for(ServerPlayer p : this.getPlayers()) {
 				if(p != player) {
 					p.join(fallbackType);
