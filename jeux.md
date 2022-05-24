@@ -1,5 +1,7 @@
 # 🕹️ Jeux
 
+[Revenir sur la page principale](./index.md)
+
 # Puissance 4
 
 Développé par Hugo LANDRIN

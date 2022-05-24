@@ -1,4 +1,4 @@
-# Juegos
+# 🎲 Juegos
 
 _Plateforme en ligne sur laquelle des joueurs peuvent jouer à des jeux de plateau classiques !_
 

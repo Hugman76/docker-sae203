@@ -1,5 +1,7 @@
 # ⚙️ Installation
 
+[Revenir sur la page principale](./index.md)
+
 ## <a name="serveur"></a> Serveur
 
 - Construction du conteneur :
