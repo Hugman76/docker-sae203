@@ -6,10 +6,15 @@ public class UnoCarte
     private int  numero; 
     
 
-    public UnoCarte(char couleurs,int numero)
+    public UnoCarte(char couleur,int numero)
     {
-        this.couleur = couleurs;
+        this.couleur = couleur;
         this.numero  = numero;
+    }
+    public UnoCarte(String carte)
+    {
+        this.couleur = carte.charAt(0);
+        this.numero  = carte.charAt(1);
     }
     public char getCouleur()
     {
@@ -18,6 +23,14 @@ public class UnoCarte
     public int getNumero()
     {
         return this.numero;
+    }
+    public void setCouleur(char couleur)
+    {
+        this.couleur = couleur;
+    }
+    public void setNumero(int numero)
+    {
+        this.numero = numero;
     }
     public String toString()
     {

@@ -10,41 +10,68 @@ import java.util.ArrayList;
 
 public class UnoServerSpace extends ServerSpace
 {
-    private static final int NB_JOUEUR_MAX = 4;
+    private static final int NB_JOUEUR_MAX = 2;
     private static final int NB_CARTES     = 108;
+    private final ServerPlayer[] players;
     private int nbJoueur = 2;
     private UnoCarte cardActuelle;
-    private ArrayList<UnoPlayer> unoPlayers;
+    private ArrayList<UnoPlayer> unoPlayers = new ArrayList<>();
     private ArrayList<UnoCarte> tabCartes = new ArrayList<>();
 
-    public UnoServerSpace() {
+    public UnoServerSpace() 
+    {
         this(2);
     }
 
-    public UnoServerSpace(int nbJoueur) {
+    public UnoServerSpace(int nbJoueur) 
+    {
         super(ServerSpaceType.UNO);
-        if(nbJoueur >= this.nbJoueur && nbJoueur <= NB_JOUEUR_MAX) this.nbJoueur = nbJoueur;
+        this.players = new ServerPlayer[NB_JOUEUR_MAX];
+        
         getPioche();
-
-        this.startGame();
-
         System.out.println("Game terminée");
     }
 
     @Override
-    public void handleJoin(ServerPlayer player) {
+    public void handleJoin(ServerPlayer player) 
+    {
+        int cpt =0;
         super.handleJoin(player);
         this.unoPlayers.add(new UnoPlayer(player, this.getPlayers().size(), this));
+        while(this.unoPlayers.size() != 2)
+        {
+           
+        }
+        this.sendCommand(player, "sendPaquet",this.unoPlayers.get(cpt).getPaquet());
+        this.startGame();
+        cpt++;
     }
 
     @Override
-    public boolean canAccept(ServerPlayer player) {
+    public boolean canAccept(ServerPlayer player) 
+    {
         return this.getPlayers().size() < this.nbJoueur;
     }
 
     @Override
-    public void handleCommand(ServerPlayer player, String[] args) {
-        
+    public void handleCommand(ServerPlayer player, String[] args) 
+    {
+        if(args[0] == "getCardActuelle") this.sendCommand(player,"setCardActuelle" ,this.cardActuelle.toString());
+        if(args[0].equals("getPaquet"))
+        {
+            String paquetToString = paquetToString();
+            this.sendCommand(player, "sendPaquet",paquetToString);
+        }
+    }
+    public String paquetToString()
+    {
+        String ch ="";
+
+        for(int i = 0;i<this.tabCartes.size();i++)
+        {
+            ch += this.tabCartes.get(i).toString()+",";
+        }
+        return ch;
     }
 
     public void startGame()
@@ -52,12 +79,20 @@ public class UnoServerSpace extends ServerSpace
         boolean     winner  = false;
         this.cardActuelle   = this.getNewCard();
         int         cpt     = 0;
-
+        for(int i = 0;i< this.unoPlayers.size();i++)
+        {
+            this.sendCommand(this.unoPlayers.get(i).getPlayer(), "setCardActuelle",this.cardActuelle.toString());
+        }
+        
         while(winner == false)
         {
-            System.out.println("C'est au tour de "+unoPlayers.get(cpt).getPlayer().getName());
-            System.out.println();
-            System.out.println(this.unoPlayers.get(cpt).getPaquet());
+           
+           System.out.println("Dans le tour");
+
+            while(this.unoPlayers.size() != 2)
+            {
+            System.out.println("Attente d'un deuxième joueur");
+            }
             startTour(cpt,this.cardActuelle);
 
             if(unoPlayers.get(cpt).getNbCartes()==0)
@@ -74,7 +109,7 @@ public class UnoServerSpace extends ServerSpace
         boolean verif  = false;
         System.out.println("\n"+cardActuelle);
         System.out.println("------------------------------");
-
+        this.sendCommand("setCardActuelle",this.cardActuelle.toString());
         while(verif == false )
         {
             System.out.println("Choisir une action pioche ou jouer : \n");
@@ -95,6 +130,8 @@ public class UnoServerSpace extends ServerSpace
                 {
                     this.tabCartes.add(this.cardActuelle);
                     this.cardActuelle = this.unoPlayers.get(cpt).getCard(numero);
+                    //send la nouvelle carte
+                    this.sendCommand(this.players[cpt],"carteActuelle" ,""+this.cardActuelle.getCouleur(),""+this.cardActuelle.getNumero());
                     this.unoPlayers.get(cpt).cardRemove(numero);
                     verif = true;
                 }
@@ -107,6 +144,7 @@ public class UnoServerSpace extends ServerSpace
                 {
                     verif = false;
                 }
+                this.sendCommand("setCardActuelle",this.cardActuelle.toString());
             }
         }
 

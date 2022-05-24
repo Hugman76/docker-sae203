@@ -39,7 +39,7 @@ public class UnoPlayer
         String ch = "";
         for(int i= 0;i<this.tabCartes.size();i++)
         {
-            ch += ""+this.tabCartes.get(i)+"/";
+            ch += ""+this.tabCartes.get(i)+",";
         }
         return ch;
     }
