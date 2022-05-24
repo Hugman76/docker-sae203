@@ -1,4 +1,4 @@
-package juegos.server.space.uno.metier;
+package juegos.common;
 
 import juegos.server.ServerPlayer;
 import juegos.server.space.uno.UnoServerSpace;

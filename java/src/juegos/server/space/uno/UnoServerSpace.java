@@ -3,8 +3,8 @@ package juegos.server.space.uno;
 import juegos.server.ServerPlayer;
 import juegos.server.space.ServerSpace;
 import juegos.server.space.ServerSpaceType;
-import juegos.server.space.uno.metier.UnoCarte;
-import juegos.server.space.uno.metier.UnoPlayer;
+import juegos.common.UnoCarte;
+import juegos.common.UnoPlayer;
 
 import java.util.ArrayList;
 
@@ -44,7 +44,7 @@ public class UnoServerSpace extends ServerSpace
 
     @Override
     public void handleCommand(ServerPlayer player, String[] args) {
-
+        
     }
 
     public void startGame()
@@ -98,12 +98,12 @@ public class UnoServerSpace extends ServerSpace
                     this.unoPlayers.get(cpt).cardRemove(numero);
                     verif = true;
                 }
-
-                if(this.unoPlayers.get(cpt).getCard(numero).getNumero() == 12 && this.unoPlayers.get(cpt).getCard(numero).getCouleur() == this.cardActuelle.getCouleur() || this.unoPlayers.get(cpt).getCard(numero).getNumero() == 14 )
+                else if(this.unoPlayers.get(cpt).getCard(numero).getNumero() == 12 && this.unoPlayers.get(cpt).getCard(numero).getCouleur() == this.cardActuelle.getCouleur() || this.unoPlayers.get(cpt).getCard(numero).getNumero() == 14 )
                 {
                     giveCard(this.unoPlayers.get(cpt).getCard(numero).getNumero(), cpt);
+                    verif = true;
                 }
-                if(this.unoPlayers.get(cpt).getCard(numero).getNumero() == 10 || this.unoPlayers.get(cpt).getCard(numero).getNumero() == 11)
+                else if(this.unoPlayers.get(cpt).getCard(numero).getNumero() == 10 || this.unoPlayers.get(cpt).getCard(numero).getNumero() == 11)
                 {
                     verif = false;
                 }
@@ -114,7 +114,7 @@ public class UnoServerSpace extends ServerSpace
 
     public UnoCarte getNewCard()
     {
-        int index = (int)(Math.random()*NB_CARTES);
+        int index = (int)(Math.random()*this.tabCartes.size());
         UnoCarte card = this.tabCartes.get(index);
         this.tabCartes.remove(index);
         return card;
@@ -128,7 +128,7 @@ public class UnoServerSpace extends ServerSpace
             //Il y a qu'un seul 0 par couleur
             this.tabCartes.add(new UnoCarte(couleurs[i], 0));
 
-            //On ajoute les numéro de 1 à 9 puis on les duplique
+            //On ajoute les numéros de 1 à 9 puis on les duplique
             for(int j = 1; j<10;j++)
             {
                 this.tabCartes.add(new UnoCarte(couleurs[i], j));
@@ -145,10 +145,10 @@ public class UnoServerSpace extends ServerSpace
                 this.tabCartes.add(new UnoCarte(couleurs[i], 12));
             }
 
-            //Numéro 4 avec une couleur noire c'est le +4 avec choix des couleurs
+            //Numéro 14 avec une couleur noire c'est le +4 avec choix des couleurs
             this.tabCartes.add(new UnoCarte(couleurs[4], 14));
 
-            //On prend comme numéro de carte 5 pour le choix des couleurs
+            //On prend comme numéro de carte 15 pour le choix des couleurs
             this.tabCartes.add(new UnoCarte(couleurs[4], 15));
 
 
