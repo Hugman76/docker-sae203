@@ -2,6 +2,7 @@ package juegos.client;
 
 import juegos.client.space.ClientSpace;
 import juegos.client.space.ClientSpaceType;
+import juegos.client.util.GUIUtils;
 import juegos.common.Command;
 import juegos.common.CommandType;
 import juegos.common.SharedConstants;
@@ -53,20 +54,29 @@ public class JuegosClient
 	 *
 	 * @return vrai si la connection a réussi.
 	 */
-	public static void connect(String username, String host, int port) throws Exception {
+	public static void connect(String username, String host, int port) {
 		// Créer le serveur
-		SharedConstants.info("Connexion au serveur " + host + ":" + port);
-		Socket socket = new Socket(host, port);
-		INSTANCE.writer = new PrintWriter(socket.getOutputStream(), true);
-		INSTANCE.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		SharedConstants.info("Connexion établie !");
-		JuegosClient.sendCommand(CommandType.USERNAME.create(username));
-		INSTANCE.readingThread = new Thread(() -> {
-			while(true) {
-				read();
-			}
-		});
-		INSTANCE.readingThread.start();
+		try {
+
+
+			SharedConstants.info("Connexion au serveur " + host + ":" + port);
+			Socket socket = new Socket(host, port);
+			INSTANCE.writer = new PrintWriter(socket.getOutputStream(), true);
+			INSTANCE.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			SharedConstants.info("Connexion établie !");
+			JuegosClient.sendCommand(CommandType.USERNAME.create(username));
+			INSTANCE.readingThread = new Thread(() -> {
+				while(true) {
+					read();
+				}
+			});
+			INSTANCE.readingThread.start();
+		} catch(IOException e) {
+			String s = "Connexion impossible. Veuillez réessayer ou utiliser une adresse différente.";
+			GUIUtils.showErrorPopup(s);
+			SharedConstants.error(s);
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -167,22 +177,17 @@ public class JuegosClient
 			String host = hostField.getText();
 			String portText = portField.getText();
 			if(username.isEmpty() || host.isEmpty() || portText.isEmpty()) {
-				JOptionPane.showMessageDialog(null, "Veuillez remplir tous les champs.", "Erreur", JOptionPane.ERROR_MESSAGE);
+				GUIUtils.showErrorPopup("Veuillez remplir tous les champs.");
 				return;
 			}
 			int port;
 			try {
 				port = Integer.parseInt(portText);
 			} catch(NumberFormatException ex) {
-				JOptionPane.showMessageDialog(null, "Le port est invalide.", "Erreur", JOptionPane.ERROR_MESSAGE);
+				GUIUtils.showErrorPopup("Le port est invalide.");
 				return;
 			}
-
-			try {
-				JuegosClient.connect(username, host, port);
-			} catch(Exception ex) {
-				JOptionPane.showMessageDialog(null, "Connexion impossible. Veuillez réessayer ou utiliser une adresse différente.", "Échec de la connexion", JOptionPane.ERROR_MESSAGE);
-			}
+			JuegosClient.connect(username, host, port);
 		});
 
 		panel.add(usernameField);

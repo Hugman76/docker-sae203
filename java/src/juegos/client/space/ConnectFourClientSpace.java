@@ -10,6 +10,7 @@ import java.awt.event.ComponentEvent;
 
 /**
  * Espace client du Puissance 4.
+ *
  * @author Hugman_76
  */
 public class ConnectFourClientSpace extends ClientSpace
@@ -37,18 +38,24 @@ public class ConnectFourClientSpace extends ClientSpace
 				}
 			}
 		}
+		if(args[0].equals(SharedConstants.CONNECT_FOUR_CMD_WIN)) {
+			GUIUtils.showPopup("Victoire !", "Vous avez gagné !");
+		}
+		if(args[0].equals(SharedConstants.CONNECT_FOUR_CMD_LOSE)) {
+			GUIUtils.showPopup("Défaite...", "Vous avez perdu...\nLe vainqueur est " + args[1] + ".");
+		}
 	}
 
 	public void updateCellsFromString(String cells) {
 		String[] cellsLines = cells.split(SharedConstants.ARGUMENT_DELIMITER);
 		int x = 0;
 		int y = 0;
-		for(int setNumber = 0; setNumber < cellsLines.length; setNumber++) {
+		for(String cellsLine : cellsLines) {
 			y = 0;
-			for(int charNumber = 0; charNumber < cellsLines[setNumber].length(); charNumber++) {
+			for(int charNumber = 0; charNumber < cellsLine.length(); charNumber++) {
 				int i;
-				if(cellsLines[setNumber].charAt(charNumber) == '-') i = -Integer.parseInt(String.valueOf(cellsLines[setNumber].charAt(++charNumber)));
-				else i = Integer.parseInt(String.valueOf(cellsLines[setNumber].charAt(charNumber)));
+				if(cellsLine.charAt(charNumber) == '-') i = -Integer.parseInt(String.valueOf(cellsLine.charAt(++charNumber)));
+				else i = Integer.parseInt(String.valueOf(cellsLine.charAt(charNumber)));
 				this.cells[x][y].setBackground(switch(i) {
 					case 0 -> Color.RED;
 					case 1 -> Color.YELLOW;
@@ -67,7 +74,8 @@ public class ConnectFourClientSpace extends ClientSpace
 		JPanel containerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
 		// Paramétrage des tailles
-		containerPanel.addComponentListener(new ComponentAdapter() {
+		containerPanel.addComponentListener(new ComponentAdapter()
+		{
 			@Override
 			public void componentResized(ComponentEvent e) {
 				GUIUtils.adaptAspectRatio(gamePanel, containerPanel);

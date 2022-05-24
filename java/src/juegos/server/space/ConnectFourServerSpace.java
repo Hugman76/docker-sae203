@@ -1,5 +1,7 @@
 package juegos.server.space;
 
+import juegos.common.Command;
+import juegos.common.CommandType;
 import juegos.common.SharedConstants;
 import juegos.server.ServerPlayer;
 
@@ -89,15 +91,8 @@ public class ConnectFourServerSpace extends ServerSpace
 				break;
 			}
 		}
-		int winner = this.checkWin();
-		if(winner != -1) {
-			ServerPlayer player = this.players[winner];
-			this.sendCommand(player, SharedConstants.CONNECT_FOUR_CMD_WIN);
-			Arrays.stream(this.players)
-					.filter(player1 -> player1 != player)
-					.forEach(player1 -> this.sendCommand(player1, SharedConstants.CONNECT_FOUR_CMD_LOSE, player.getName()));
-		}
 		this.sendCellsToEveryone();
+		this.checkWin();
 	}
 
 	public void sendLocks(ServerPlayer player) {
@@ -124,34 +119,86 @@ public class ConnectFourServerSpace extends ServerSpace
 		if(!unlockedInts.isEmpty()) this.sendCommand(player, SharedConstants.CONNECT_FOUR_CMD_COLUMN, SharedConstants.CONNECT_FOUR_CMD_COLUMN_LOCK, unlockedInts.toString(), String.valueOf(false));
 	}
 
-	public int checkHorizontalWin(int y) {
-		int consecutive = 0;
-		int player = EMPTY_CELL;
+	public void win(int playerIndex) {
+		ServerPlayer player = this.players[playerIndex];
+		Arrays.stream(this.players)
+				.filter(player1 -> player1 != player)
+				.forEach(player1 -> {
+					this.sendCommand(player1, SharedConstants.CONNECT_FOUR_CMD_LOSE, player.getName());
+					player1.leave();
+				});
+		this.sendCommand(player, SharedConstants.CONNECT_FOUR_CMD_WIN);
+		player.leave();
+	}
+
+	public void checkWin() {
+		this.checkDiagonalWins();
+		for(int x = 0; x < SharedConstants.CONNECT_FOUR_WIDTH; x++) {
+			this.checkVerticalWin(x);
+		}
+		for(int y = 0; y < SharedConstants.CONNECT_FOUR_HEIGHT; y++) {
+			this.checkHorizontalWin(y);
+		}
+	}
+
+	public void checkHorizontalWin(int y) {
+		int consecutive = 1;
+		int playerIndex = EMPTY_CELL;
 		for(int x = 0; x < SharedConstants.CONNECT_FOUR_WIDTH; x++) {
 			int cellValue = this.tileSet[x][y];
-			if(player != cellValue || cellValue == EMPTY_CELL) {
-				consecutive = 0;
-				player = cellValue;
+			if(playerIndex != cellValue || cellValue == EMPTY_CELL) {
+				consecutive = 1;
+				playerIndex = cellValue;
 			} else {
 				consecutive++;
 			}
 			if(consecutive == WIN_CELL_LENGTH) {
-				return player;
+				this.win(playerIndex);
 			}
 		}
-		return -1;
 	}
 
-	public int checkWin() {
-		for(int x = 0; x < this.tileSet.length; x++) {
-			for(int y = 0; y < this.tileSet[x].length; y++) {
-				if(x == 0) {
-					int winner = this.checkHorizontalWin(y);
-					if(winner != EMPTY_CELL) return winner;
-				}
+	public void checkVerticalWin(int x) {
+		int consecutive = 1;
+		int playerIndex = EMPTY_CELL;
+		for(int y = 0; y < SharedConstants.CONNECT_FOUR_HEIGHT; y++) {
+			int cellValue = this.tileSet[x][y];
+			if(playerIndex != cellValue || cellValue == EMPTY_CELL) {
+				consecutive = 0;
+				playerIndex = cellValue;
+			} else {
+				consecutive++;
+			}
+			if(consecutive == WIN_CELL_LENGTH) {
+				this.win(playerIndex);
 			}
 		}
-		return EMPTY_CELL;
+	}
+
+	public void checkDiagonalWins() {
+		int consecutive = 1;
+		int playerIndex = EMPTY_CELL;
+		int firstStartY = -(SharedConstants.CONNECT_FOUR_WIDTH - 1);
+		int lastStartY = SharedConstants.CONNECT_FOUR_HEIGHT - 1;
+		for(int startY = firstStartY; startY <= lastStartY; startY++) {
+			int x = 0;
+			for(int y = startY; y < SharedConstants.CONNECT_FOUR_HEIGHT; y++) {
+				if(x < 0 || x >= SharedConstants.CONNECT_FOUR_WIDTH) break;
+				if(y < 0 || y >= SharedConstants.CONNECT_FOUR_HEIGHT) break;
+				int cellValue = this.tileSet[x][y];
+				if(playerIndex != cellValue || cellValue == EMPTY_CELL) {
+					consecutive = 1;
+					playerIndex = cellValue;
+				}
+				else {
+					consecutive++;
+				}
+				if(consecutive == WIN_CELL_LENGTH) {
+					this.win(playerIndex);
+				}
+				x++;
+			}
+		}
 	}
 
 	public void sendCellsToEveryone() {

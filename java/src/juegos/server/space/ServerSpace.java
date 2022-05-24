@@ -1,7 +1,6 @@
 package juegos.server.space;
 
 import juegos.common.CommandType;
-import juegos.common.SharedConstants;
 import juegos.server.JuegosServer;
 import juegos.server.ServerPlayer;
 
@@ -47,7 +46,7 @@ public abstract class ServerSpace
 	/**
 	 * Méthode de raccourci pour envoyer une commande d'espace à TOUS les clients.
 	 *
-	 * @param args   les arguments de la commande
+	 * @param args les arguments de la commande
 	 */
 	public void sendCommand(String... args) {
 		getPlayers().forEach(p -> this.sendCommand(p, args));
