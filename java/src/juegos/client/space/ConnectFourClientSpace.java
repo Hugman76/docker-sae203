@@ -77,7 +77,7 @@ public class ConnectFourClientSpace extends ClientSpace
 		// Ajout des boutons de contrôles
 		for(int x = 0; x < SharedConstants.CONNECT_FOUR_WIDTH; x++) {
 			final Image img = Toolkit.getDefaultToolkit().getImage("data/images/connect_four/button.png");
-			this.buttons[x] = new JButton(new ImageIcon(img.getScaledInstance(120, 120,  java.awt.Image.SCALE_SMOOTH)));
+			this.buttons[x] = new JButton(new ImageIcon(img.getScaledInstance(120, 120, Image.SCALE_SMOOTH)));
 			this.buttons[x].setHorizontalTextPosition(JButton.CENTER);
 			this.buttons[x].setVerticalTextPosition(JButton.CENTER);
 
