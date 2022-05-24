@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 public class TTTClientSpace extends ClientSpace implements ActionListener
 {
 	public  JButton[][] tabBtnCase;
-	private String forme;
+	private final String forme;
 
 	public TTTClientSpace() {
 		super(ClientSpaceType.TIC_TAC_TOE);
@@ -20,22 +20,14 @@ public class TTTClientSpace extends ClientSpace implements ActionListener
 
 	@Override
 	public void handleCommand(String[] args) {
-		if (args[0].equals("get"))
-		{
-			this.buildGrille(args[1]);
+		if (args[0].equals("set")) {
+			this.setCase(Integer.parseInt(args[1]), Integer.parseInt(args[2]), args[3]);
 		}
 	}
 
-	public void buildGrille(String forme) {
-		String[] grilleSetArray = forme.split(SharedConstants.TIC_TAC_TOE);
-		for (int lig = 0; lig < grilleSetArray.length; lig++)
-		{
-			String grilleSetLine = grilleSetArray[lig];
-			for (int col = 0; col < grilleSetLine.length(); col++)
-			{
+	public void setCase(int lig, int col, String forme) {
 
-			}
-		}
+		this.tabBtnCase[lig][col].setText(String.valueOf(forme));
 	}
 
 	@Override
@@ -49,7 +41,10 @@ public class TTTClientSpace extends ClientSpace implements ActionListener
 
 		for(int lig = 0; lig < this.tabBtnCase.length; lig++)
 			for(int col = 0; col < this.tabBtnCase.length; col++)
+			{
 				this.tabBtnCase[lig][col] = new JButton(" ");
+				this.tabBtnCase[lig][col].setBackground(Color.WHITE);
+			}
 
 		JLabel lblJ1 = new JLabel("quoi");
 		JLabel lblJ2 = new JLabel("feur");
@@ -89,4 +84,6 @@ public class TTTClientSpace extends ClientSpace implements ActionListener
 				}
 
 	}
+
+
 }
