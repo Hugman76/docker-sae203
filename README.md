@@ -2,10 +2,11 @@
 
 Ce dépôt contient un docker qui lance un serveur multijoueur pour jouer à plusieurs mini-jeux.
 
-## 🎮 Jeux disponibles
+## 🎮 Jeux
+### Disponibles
 - Puissance 4
 
-## En cours de développement
+### En cours de développement
 - Morpion
 - Bataille
 - UNO

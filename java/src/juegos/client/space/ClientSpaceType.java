@@ -10,9 +10,9 @@ public class ClientSpaceType
 	public static final ArrayList<ClientSpaceType> TYPES = new ArrayList<>();
 
 	public static final ClientSpaceType LOBBY = register("Menu principal", SharedConstants.LOBBY, LobbyClientSpace::new);
-	public static final ClientSpaceType TEST = register("DEBUG TEST", SharedConstants.TEST, TestClientSpace::new);
 	public static final ClientSpaceType CONNECT_FOUR = register("Puissance 4", SharedConstants.CONNECT_FOUR, ConnectFourClientSpace::new);
 	public static final ClientSpaceType TIC_TAC_TOE = register("Morpion", SharedConstants.TIC_TAC_TOE, TTTClientSpace::new);
+	public static final ClientSpaceType UNO = register("UNO", SharedConstants.UNO, UnoClientSpace::new);
 
 	private final String name;
 	private final String id;

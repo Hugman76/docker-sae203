@@ -12,7 +12,6 @@ public class ServerSpaceType
 	public static final ArrayList<ServerSpaceType> TYPES = new ArrayList<>();
 
 	public static final ServerSpaceType LOBBY = register(SharedConstants.LOBBY, LobbyServerSpace::new);
-	public static final ServerSpaceType TEST = register(SharedConstants.TEST, TestServerSpace::new);
 	public static final ServerSpaceType CONNECT_FOUR = register(SharedConstants.CONNECT_FOUR, ConnectFourServerSpace::new);
 	public static final ServerSpaceType TIC_TAC_TOE = register(SharedConstants.TIC_TAC_TOE, TTTServerSpace::new);
 	public static final ServerSpaceType UNO = register(SharedConstants.UNO, UnoServerSpace::new);

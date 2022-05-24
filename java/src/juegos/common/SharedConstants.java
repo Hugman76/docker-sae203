@@ -18,9 +18,9 @@ public class SharedConstants
 	public static final String ARGUMENT_DELIMITER = "'";
 
 	public static final String LOBBY = "lobby";
-	public static final String TEST = "test";
+
 	/**
-	 * Puissance 4
+	 * <a href="https://fr.wikipedia.org/wiki/Puissance_4">Puissance 4</a>
 	 */
 	public static final String CONNECT_FOUR = "connect_four";
 	public static final int CONNECT_FOUR_HEIGHT = 6;
@@ -31,12 +31,16 @@ public class SharedConstants
 	public static final String CONNECT_FOUR_CMD_COLUMN = "column";
 	public static final String CONNECT_FOUR_CMD_COLUMN_LOCK = "lock";
 	/**
-	 * Morpion
+	 * <a href="https://fr.wikipedia.org/wiki/Morpion_(jeu)">Morpion</a>
 	 */
 	public static final String TIC_TAC_TOE = "tic_tac_toe";
 	public static final String TIC_TAC_TOE_DELIMITER = "/";
 	/**
-	 * Uno
+	 * <a href="https://fr.wikipedia.org/wiki/Bataille_(jeu)">Bataille</a>
+	 */
+	public static final String WAR = "war";
+	/**
+	 * <a href="https://fr.wikipedia.org/wiki/Uno">Uno</a>
 	 */
 	public static final String UNO = "U";
 
