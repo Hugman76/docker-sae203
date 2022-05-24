@@ -30,6 +30,8 @@ public class SharedConstants
 	public static final String CONNECT_FOUR_CMD_CELL_PUT = "put";
 	public static final String CONNECT_FOUR_CMD_COLUMN = "column";
 	public static final String CONNECT_FOUR_CMD_COLUMN_LOCK = "lock";
+	public static final String CONNECT_FOUR_CMD_WIN = "win";
+	public static final String CONNECT_FOUR_CMD_LOSE = "win";
 	/**
 	 * <a href="https://fr.wikipedia.org/wiki/Morpion_(jeu)">Morpion</a>
 	 */

@@ -12,6 +12,7 @@ import java.util.Arrays;
 public class ConnectFourServerSpace extends ServerSpace
 {
 	private static final int EMPTY_CELL = -1;
+	private static final int WIN_CELL_LENGTH = 4;
 	private final int[][] tileSet;
 	private final ServerPlayer[] players;
 	private int turn;
@@ -88,7 +89,14 @@ public class ConnectFourServerSpace extends ServerSpace
 				break;
 			}
 		}
-		this.checkWin();
+		int winner = this.checkWin();
+		if(winner != -1) {
+			ServerPlayer player = this.players[winner];
+			this.sendCommand(player, SharedConstants.CONNECT_FOUR_CMD_WIN);
+			Arrays.stream(this.players)
+					.filter(player1 -> player1 != player)
+					.forEach(player1 -> this.sendCommand(player1, SharedConstants.CONNECT_FOUR_CMD_LOSE, player.getName()));
+		}
 		this.sendCellsToEveryone();
 	}
 
@@ -116,15 +124,34 @@ public class ConnectFourServerSpace extends ServerSpace
 		if(!unlockedInts.isEmpty()) this.sendCommand(player, SharedConstants.CONNECT_FOUR_CMD_COLUMN, SharedConstants.CONNECT_FOUR_CMD_COLUMN_LOCK, unlockedInts.toString(), String.valueOf(false));
 	}
 
-	public void checkWin() {
-		for(int[] line : this.tileSet) {
-			for(int tile : line) {
-				if(tile == EMPTY_CELL) return;
+	public int checkHorizontalWin(int y) {
+		int consecutive = 0;
+		int player = EMPTY_CELL;
+		for(int x = 0; x < SharedConstants.CONNECT_FOUR_WIDTH; x++) {
+			int cellValue = this.tileSet[x][y];
+			if(player != cellValue || cellValue == EMPTY_CELL) {
+				consecutive = 0;
+				player = cellValue;
+			} else {
+				consecutive++;
+			}
+			if(consecutive == WIN_CELL_LENGTH) {
+				return player;
 			}
 		}
-		for(ServerPlayer player : this.getPlayers()) {
-			player.leave();
+		return -1;
+	}
+
+	public int checkWin() {
+		for(int x = 0; x < this.tileSet.length; x++) {
+			for(int y = 0; y < this.tileSet[x].length; y++) {
+				if(x == 0) {
+					int winner = this.checkHorizontalWin(y);
+					if(winner != EMPTY_CELL) return winner;
+				}
+			}
 		}
+		return EMPTY_CELL;
 	}
 
 	public void sendCellsToEveryone() {
