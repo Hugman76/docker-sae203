@@ -14,12 +14,7 @@ installer soi-même Juegos et comment il fonctionne.
 
 ## Table des matières
 - ⭐ Page principale (_vous êtes ici_)
-  - [Travaux effectués](#travaux)
-  - [Auteurs](#auteurs)
-  - [Liens externes](#liens)
 - [Installation](./installation.md)
-  - [Serveur](./installation.md#serveur)
-  - [Client](./installation.md#client)
 - [Explication du Dockerfile](./dockerfile.md)
 - [Explication du programme Java](./java.md)
 - [Jeux](./jeux.md)
