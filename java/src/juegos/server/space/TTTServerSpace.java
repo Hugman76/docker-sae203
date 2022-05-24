@@ -7,6 +7,8 @@ import java.util.Arrays;
 public class TTTServerSpace extends ServerSpace
 {
     private char[][] tabChar;
+    private ServerPlayer[] player;
+    private int turn;
 
     public TTTServerSpace() {
         super(ServerSpaceType.TIC_TAC_TOE);
@@ -14,11 +16,14 @@ public class TTTServerSpace extends ServerSpace
         this.tabChar = new char[3][3];
         for(char[] line : tabChar)
             Arrays.fill(line, ' ');
+
+        this.player = new ServerPlayer[2];
+        this.turn =0;
     }
 
     @Override
     public boolean canAccept(ServerPlayer player) {
-        return this.getPlayers().size() <= 2;
+        return this.getPlayers().size() <= this.player.length;
     }
 
     @Override
@@ -48,24 +53,50 @@ public class TTTServerSpace extends ServerSpace
             this.sendCommand(player, "set", String.valueOf(lig), String.valueOf(col), String.valueOf(this.tabChar[lig][col]));
         }
     }
-    /*public boolean checkWin()
+
+    public void nextTurn()
     {
-        boolean win = false;
-        ServerPlayer player;
-        for (int lig=0; lig < this.tabChar.length; lig++)
-            for (int col=0; col < this.tabChar.length; col++)
+        this.turn = (this.turn + 1) % this.player.length;
+    }
+
+    public int getNbVide()
+    {
+        int nbVide = 0;
+
+        for (char[] line : this.tabChar)
+            if (Arrays.toString(line).equals(" "))
             {
-                win =   tabChar[0][0] == tabChar [0][1] == tabChar[0][2] == this.getPlayerChar(player)||
-                        tabChar[1][0] == tabChar [1][1] == tabChar[1][2] == this.getPlayerChar(player) ||
-                        tabChar[2][0] == tabChar [2][1] == tabChar[2][2] == this.getPlayerChar(player) ||
-
-                        tabChar[0][0] == tabChar [1][0] == tabChar[2][0] == this.getPlayerChar(player) ||
-                        tabChar[0][1] == tabChar [1][1] == tabChar[2][1] == this.getPlayerChar(player) ||
-                        tabChar[0][2] == tabChar [1][2] == tabChar[2][2] == this.getPlayerChar(player) ||
-
-                        tabChar[0][0] = tabChar[1][1] && tabChar[0][0] = tabChar[2][2] && tabChar[0][0] = this.getPlayerChar(player) ||
-                        tabChar[2][0] == tabChar[1][1] && tabChar[2][0] == tabChar[0][2] && tabChar[2][0] = this.getPlayerChar(player);
+                nbVide++;
             }
-        return win;*/
+        return nbVide;
+    }
+
+    /*public boolean checkWin() {
+        boolean win = false;
+        if (
+                        tabChar[1][0] == tabChar[1][1] && tabChar[1][0] == tabChar[1][2] && tabChar[1][0] == this.getPlayerChar() ||
+                        tabChar[2][0] == tabChar[2][1] && tabChar[1][0] == tabChar[2][2] && tabChar[2][0] == this.getPlayerChar() ||
+                        tabChar[0][0] == tabChar[0][1] && tabChar[1][0] == tabChar[0][2] && tabChar[0][0] == this.getPlayerChar() ||
+
+                        tabChar[0][0] == tabChar[1][0] && tabChar[1][0] == tabChar[2][0] && tabChar[0][0] == this.getPlayerChar() ||
+                        tabChar[0][1] == tabChar[1][1] && tabChar[1][0] == tabChar[2][1] && tabChar[0][1] == this.getPlayerChar() ||
+                        tabChar[0][2] == tabChar[1][2] && tabChar[1][0] == tabChar[2][2] && tabChar[0][2]== this.getPlayerChar() ||
+
+                        tabChar[0][0] == tabChar[1][1] && tabChar[0][0] == tabChar[2][2] && tabChar[0][0] == this.getPlayerChar() ||
+                        tabChar[2][0] == tabChar[1][1] && tabChar[2][0] == tabChar[0][2] && tabChar[2][0] == this.getPlayerChar()
+        )
+        {
+            win = true;
+        }
+        else
+        {
+            if (getNbVide() == 0) {win = false;}
+        }
+
+        for(ServerPlayer player : this.getPlayers())
+            player.leave();
+
+        return win;
+    }*/
 }
 
