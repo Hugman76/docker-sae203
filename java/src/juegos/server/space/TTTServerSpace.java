@@ -27,7 +27,7 @@ public class TTTServerSpace extends ServerSpace
 
 	@Override
 	public boolean canAccept(ServerPlayer player) {
-		return this.getPlayers().size() <= this.players.length;
+		return this.getPlayers().size() < this.players.length;
 	}
 
 	@Override
@@ -77,7 +77,11 @@ public class TTTServerSpace extends ServerSpace
 		if(this.tabChar[lig][col] == EMPTY_CELl) {
 			this.tabChar[lig][col] = c;
 			this.nextTurn();
-			this.getPlayers().forEach(this::sendInfos);
+			for(ServerPlayer player : this.players) {
+				if(player != null) {
+					this.sendInfos(player);
+				}
+			}
 			this.checkWin();
 		}
 	}
@@ -173,8 +177,8 @@ public class TTTServerSpace extends ServerSpace
 	public void sendInfos(ServerPlayer player) {
 		// Envoi des cellules
 		this.sendCommand(player,
-				SharedConstants.CONNECT_FOUR_CMD_CELL,
-				SharedConstants.CONNECT_FOUR_CMD_CELL_ALL,
+				SharedConstants.TIC_TAC_TOE_CMD_CELL,
+				SharedConstants.TIC_TAC_TOE_CMD_CELL_ALL,
 				this.cellsToString());
 	}
 }

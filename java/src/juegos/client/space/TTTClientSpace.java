@@ -108,7 +108,8 @@ public class TTTClientSpace extends ClientSpace implements ActionListener
 		for(int lig = 0; lig < this.tabBtnCase.length; lig++)
 			for(int col = 0; col < this.tabBtnCase.length; col++)
 				if(e.getSource() == tabBtnCase[lig][col])
-					this.sendCommand(SharedConstants.TIC_TAC_TOE_CMD_CELL,
+					this.sendCommand(
+							SharedConstants.TIC_TAC_TOE_CMD_CELL,
 							SharedConstants.TIC_TAC_TOE_CMD_CELL_PUT,
 							String.valueOf(lig),
 							String.valueOf(col));
