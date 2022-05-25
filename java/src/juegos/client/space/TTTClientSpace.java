@@ -27,7 +27,12 @@ public class TTTClientSpace extends ClientSpace implements ActionListener {
 			GUIUtils.showPopup("Victoire !", "Vous avez gagné !");
 		}
 		if (args[0].equals(SharedConstants.LOSE)) {
-			GUIUtils.showPopup("Défaite...", "Vous avez perdu...\nLe vainqueur est " + args[1] + ".");
+			if(args.length == 2) {
+				GUIUtils.showPopup("Défaite...", "Vous avez perdu...\nLe vainqueur est " + args[1] + ".");
+			}
+			else {
+				GUIUtils.showPopup("Égalité !", "Vous êtes à égalité !!");
+			}
 		}
 
 	}

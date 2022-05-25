@@ -35,7 +35,7 @@ public class TTTServerSpace extends ServerSpace {
             if (args[1].equals(SharedConstants.TIC_TAC_TOE_CMD_CELL_PUT)) {
                 int lig = Integer.parseInt(args[2]);
                 int col = Integer.parseInt(args[3]);
-                placeCell(lig, col, getPlayerChar(getPlayerIndex(player)));
+                this.placeCell(lig, col, getPlayerChar(getPlayerIndex(player)));
             }
         }
     }
@@ -46,7 +46,7 @@ public class TTTServerSpace extends ServerSpace {
         for (int i = 0; i < this.players.length; i++) {
             if (this.players[i] == null) {
                 this.players[i] = player;
-                this.sendCells(player);
+                this.sendInfos(player);
                 break;
             }
         }
@@ -76,7 +76,7 @@ public class TTTServerSpace extends ServerSpace {
         if (this.tabChar[lig][col] == EMPTY_CELl) {
             this.tabChar[lig][col] = c;
             this.nextTurn();
-            this.getPlayers().forEach(this::sendCells);
+            this.getPlayers().forEach(this::sendInfos);
             this.checkWin();
         }
     }
@@ -95,11 +95,9 @@ public class TTTServerSpace extends ServerSpace {
         this.destroy(player);
     }
 
-    public void tie(int playerIndex) {
-        ServerPlayer player = this.players[playerIndex];
+    public void tie() {
         this.sendCommand(SharedConstants.LOSE);
-        player.join(ServerSpaceType.LOBBY);
-        this.destroy(player);
+        this.destroy(null);
     }
 
     public void checkWin() {
@@ -107,7 +105,9 @@ public class TTTServerSpace extends ServerSpace {
             this.checkVerticalWins(playerIndex);
             this.checkHorizontalWins(playerIndex);
             this.checkDiagonalWins(playerIndex);
-            this.checkTie((playerIndex));
+        }
+        if(this.isFull()) {
+            this.tie();
         }
     }
 
@@ -146,20 +146,17 @@ public class TTTServerSpace extends ServerSpace {
             this.win(playerIndex);
     }
 
-    public void checkTie(int playerIndex) {
+    public boolean isFull() {
         for (int col = 0; col < this.tabChar[0].length; col++) {
-            boolean tie = true;
             for (int lig = 0; lig < 3; lig++) {
                 if (tabChar[lig][col] == ' ')
-                    tie = false;
-            }
-            if (tie) {
-                this.tie(playerIndex);
+                    return false;
             }
         }
+        return true;
     }
 
-    public String cellsToString(ServerPlayer player) {
+    public String cellsToString() {
         StringBuilder s = new StringBuilder();
         for (int x = 0; x < this.tabChar.length; x++) {
             for (int y = 0; y < this.tabChar.length; y++) {
@@ -172,10 +169,11 @@ public class TTTServerSpace extends ServerSpace {
         return s.toString();
     }
 
-    public void sendCells(ServerPlayer player) {
+    public void sendInfos(ServerPlayer player) {
+        // Envoi des cellules
         this.sendCommand(player,
                 SharedConstants.CONNECT_FOUR_CMD_CELL,
                 SharedConstants.CONNECT_FOUR_CMD_CELL_ALL,
-                this.cellsToString(player));
+                this.cellsToString());
     }
 }

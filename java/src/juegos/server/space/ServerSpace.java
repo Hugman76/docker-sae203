@@ -92,7 +92,7 @@ public abstract class ServerSpace
 	/**
 	 * Déplace les joueurs au lobby, puis détruit cet espace.
 	 *
-	 * @param player le joueur qui a causé la destruction de cet espace. On le retire de la liste des joueurs à rediriger, car il se trouve sûrement déjà autre part.
+	 * @param player le joueur qui a causé la destruction de cet espace. On le retire de la liste des joueurs à rediriger, car il se trouve sûrement déjà autre part. Cet argument peut être nul.
 	 */
 	public void destroy(ServerPlayer player) {
 		this.destroy(player, ServerSpaceType.LOBBY);
@@ -108,7 +108,7 @@ public abstract class ServerSpace
 		if(JuegosServer.getSpaces().contains(this)) {
 			JuegosServer.deleteSpace(this);
 			for(ServerPlayer p : this.getPlayers()) {
-				if(p != player) {
+				if(player == null || p != player) {
 					p.join(fallbackType);
 				}
 			}
