@@ -14,9 +14,7 @@ public class LobbyClientSpace extends ClientSpace
 	}
 
 	@Override
-	public void handleCommand(String[] args) {
-
-	}
+	public void handleCommand(String[] args) {}
 
 	@Override
 	public JPanel getUI() {

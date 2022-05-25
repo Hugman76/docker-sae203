@@ -8,7 +8,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class TTTClientSpace extends ClientSpace implements ActionListener {
+public class TTTClientSpace extends ClientSpace implements ActionListener
+{
 	public JButton[][] tabBtnCase;
 
 	public TTTClientSpace() {
@@ -18,15 +19,15 @@ public class TTTClientSpace extends ClientSpace implements ActionListener {
 
 	@Override
 	public void handleCommand(String[] args) {
-		if (args[0].equals(SharedConstants.TIC_TAC_TOE_CMD_CELL)) {
-			if (args[1].equals(SharedConstants.TIC_TAC_TOE_CMD_CELL_ALL)) {
+		if(args[0].equals(SharedConstants.TIC_TAC_TOE_CMD_CELL)) {
+			if(args[1].equals(SharedConstants.TIC_TAC_TOE_CMD_CELL_ALL)) {
 				this.updateCellsFromString(args[2]);
 			}
 		}
-		if (args[0].equals(SharedConstants.WIN)) {
+		if(args[0].equals(SharedConstants.WIN)) {
 			GUIUtils.showPopup("Victoire !", "Vous avez gagné !");
 		}
-		if (args[0].equals(SharedConstants.LOSE)) {
+		if(args[0].equals(SharedConstants.LOSE)) {
 			if(args.length == 2) {
 				GUIUtils.showPopup("Défaite...", "Vous avez perdu...\nLe vainqueur est " + args[1] + ".");
 			}
@@ -41,9 +42,9 @@ public class TTTClientSpace extends ClientSpace implements ActionListener {
 		String[] cellsLines = cells.split(SharedConstants.ARGUMENT_DELIMITER);
 		int x = 0;
 		int y;
-		for (String cellsLine : cellsLines) {
+		for(String cellsLine : cellsLines) {
 			y = 0;
-			for (int charNumber = 0; charNumber < cellsLine.length(); charNumber++) {
+			for(int charNumber = 0; charNumber < cellsLine.length(); charNumber++) {
 				this.tabBtnCase[x][y].setIcon(new ImageIcon(
 						"data/images/ttt/" + Character.toLowerCase(cellsLine.charAt(charNumber)) + ".png"));
 				y++;
@@ -68,8 +69,8 @@ public class TTTClientSpace extends ClientSpace implements ActionListener {
 		panelJ2.setMaximumSize(panelJ1.getPreferredSize());
 		panelJ2.setMinimumSize(panelJ1.getPreferredSize());
 
-		for (int lig = 0; lig < this.tabBtnCase.length; lig++)
-			for (int col = 0; col < this.tabBtnCase.length; col++) {
+		for(int lig = 0; lig < this.tabBtnCase.length; lig++)
+			for(int col = 0; col < this.tabBtnCase.length; col++) {
 				this.tabBtnCase[lig][col] = new JButton(" ");
 				this.tabBtnCase[lig][col].setBackground(Color.WHITE);
 				this.tabBtnCase[lig][col].setPreferredSize(new Dimension(120, 120));
@@ -79,8 +80,8 @@ public class TTTClientSpace extends ClientSpace implements ActionListener {
 		JLabel lblJ2 = new JLabel("feur");
 
 		// Positionnement des composants
-		for (int lig = 0; lig < this.tabBtnCase.length; lig++)
-			for (int col = 0; col < this.tabBtnCase.length; col++)
+		for(int lig = 0; lig < this.tabBtnCase.length; lig++)
+			for(int col = 0; col < this.tabBtnCase.length; col++)
 				panelPlateau.add(this.tabBtnCase[lig][col]);
 
 		panelPlateau.setLayout(new GridLayout(3, 3));
@@ -95,8 +96,8 @@ public class TTTClientSpace extends ClientSpace implements ActionListener {
 		mainPanel.setLayout(new GridLayout(3, 1));
 
 		// Activation des composants
-		for (int lig = 0; lig < this.tabBtnCase.length; lig++)
-			for (int col = 0; col < this.tabBtnCase.length; col++)
+		for(int lig = 0; lig < this.tabBtnCase.length; lig++)
+			for(int col = 0; col < this.tabBtnCase.length; col++)
 				this.tabBtnCase[lig][col].addActionListener(this);
 
 		return mainPanel;
@@ -104,9 +105,9 @@ public class TTTClientSpace extends ClientSpace implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		for (int lig = 0; lig < this.tabBtnCase.length; lig++)
-			for (int col = 0; col < this.tabBtnCase.length; col++)
-				if (e.getSource() == tabBtnCase[lig][col])
+		for(int lig = 0; lig < this.tabBtnCase.length; lig++)
+			for(int col = 0; col < this.tabBtnCase.length; col++)
+				if(e.getSource() == tabBtnCase[lig][col])
 					this.sendCommand(SharedConstants.TIC_TAC_TOE_CMD_CELL,
 							SharedConstants.TIC_TAC_TOE_CMD_CELL_PUT,
 							String.valueOf(lig),
