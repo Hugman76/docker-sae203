@@ -18,7 +18,8 @@ public class UnoPlayer
         this.numJoueur  = numJoueur;
         this.player     = player;
         this.ctrl       = ctrl;
-        this.piocheDebut();
+        piocheDebut();
+        
     }
 
     public ServerPlayer getPlayer(){return this.player;}
@@ -39,7 +40,7 @@ public class UnoPlayer
         String ch = "";
         for(int i= 0;i<this.tabCartes.size();i++)
         {
-            ch += ""+this.tabCartes.get(i)+",";
+            ch += ""+this.tabCartes.get(i).toString()+",";
         }
         return ch;
     }

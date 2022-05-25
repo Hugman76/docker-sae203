@@ -14,6 +14,8 @@ public class UnoServerSpace extends ServerSpace
     private static final int NB_CARTES     = 108;
     private final ServerPlayer[] players;
     private int nbJoueur = 2;
+    private int cpt = 0;
+    private boolean ok = false;
     private UnoCarte cardActuelle;
     private ArrayList<UnoPlayer> unoPlayers = new ArrayList<>();
     private ArrayList<UnoCarte> tabCartes = new ArrayList<>();
@@ -26,127 +28,75 @@ public class UnoServerSpace extends ServerSpace
     public UnoServerSpace(int nbJoueur) 
     {
         super(ServerSpaceType.UNO);
-        this.players = new ServerPlayer[NB_JOUEUR_MAX];
+        this.players = new ServerPlayer[nbJoueur];
+        this.getPioche();
+        this.cardActuelle = getNewCard();
         
-        getPioche();
-        System.out.println("Game terminée");
     }
+
 
     @Override
     public void handleJoin(ServerPlayer player) 
     {
-        int cpt =0;
+        
         super.handleJoin(player);
-        this.unoPlayers.add(new UnoPlayer(player, this.getPlayers().size(), this));
-        while(this.unoPlayers.size() != 2)
-        {
-           
-        }
-        this.sendCommand(player, "sendPaquet",this.unoPlayers.get(cpt).getPaquet());
-        this.startGame();
-        cpt++;
+         
+        this.unoPlayers.add(new UnoPlayer(player, this.players.length, this)); 
+        this.players[this.cpt] = this.unoPlayers.get(this.cpt).getPlayer();
+        this.sendCommand(this.unoPlayers.get(cpt).getPlayer(), "sendCardActuelle",""+cardActuelle.getCouleur()+""+cardActuelle.getNumero());
+        this.sendCommand(this.unoPlayers.get(cpt).getPlayer(), "sendPaquet",this.unoPlayers.get(cpt).getPaquet());
+        System.out.println(this.unoPlayers.get(cpt).getPaquet());
+        this.cpt++;
     }
 
     @Override
     public boolean canAccept(ServerPlayer player) 
     {
+         
         return this.getPlayers().size() < this.nbJoueur;
     }
+    
 
     @Override
     public void handleCommand(ServerPlayer player, String[] args) 
     {
-        if(args[0] == "getCardActuelle") this.sendCommand(player,"setCardActuelle" ,this.cardActuelle.toString());
-        if(args[0].equals("getPaquet"))
+        if(args[0].equals("getOK"))
         {
-            String paquetToString = paquetToString();
-            this.sendCommand(player, "sendPaquet",paquetToString);
+            this.startTour(getIndexPlayers(player), this.cardActuelle);
+            System.out.println("OKKKKK");
         }
     }
-    public String paquetToString()
+    @Override
+	public void handleLeave(ServerPlayer player) 
+    {
+		super.handleLeave(player);
+		
+	}
+    public int getIndexPlayers(ServerPlayer player)
+    {
+        int index =0;
+        for(int i = 0;i<this.players.length;i++)
+        {
+            if(player==this.players[i]  )return i;
+        }
+        return 3;
+    }
+    public String paquetToString(int cpt)
     {
         String ch ="";
 
-        for(int i = 0;i<this.tabCartes.size();i++)
+        for(int i = 0;i<this.unoPlayers.get(this.cpt).getNbCartes();i++)
         {
-            ch += this.tabCartes.get(i).toString()+",";
+            ch += this.unoPlayers.get(this.cpt).getCard(i).toString()+",";
         }
         return ch;
     }
-
-    public void startGame()
-    {
-        boolean     winner  = false;
-        this.cardActuelle   = this.getNewCard();
-        int         cpt     = 0;
-        for(int i = 0;i< this.unoPlayers.size();i++)
-        {
-            this.sendCommand(this.unoPlayers.get(i).getPlayer(), "setCardActuelle",this.cardActuelle.toString());
-        }
-        
-        while(winner == false)
-        {
-           
-           System.out.println("Dans le tour");
-
-            while(this.unoPlayers.size() != 2)
-            {
-            System.out.println("Attente d'un deuxième joueur");
-            }
-            startTour(cpt,this.cardActuelle);
-
-            if(unoPlayers.get(cpt).getNbCartes()==0)
-            {
-                winner = true;
-                System.out.println("le gagnant est "+unoPlayers.get(cpt));
-            }
-            cpt++;
-            if(cpt==2)cpt = 0;
-        }
-    }
+    
     public void startTour(int cpt, UnoCarte cardActuelle)
     {
-        boolean verif  = false;
-        System.out.println("\n"+cardActuelle);
-        System.out.println("------------------------------");
-        this.sendCommand("setCardActuelle",this.cardActuelle.toString());
-        while(verif == false )
-        {
-            System.out.println("Choisir une action pioche ou jouer : \n");
-            String actionJoueur = "Clavier.lireString()";
-
-            if(actionJoueur.equals("pioche"))
-            {
-                this.unoPlayers.get(cpt).addCard();
-                verif = true;
-            }
-
-            if(actionJoueur.equals("jouer"))
-            {
-                System.out.println("Choisissez le numéro de la carte");
-                int  numero  = 0; //Clavier.lire_int()
-
-                if(this.unoPlayers.get(cpt).getCard(numero).getCouleur()==this.cardActuelle.getCouleur() || this.unoPlayers.get(cpt).getCard(numero).getNumero()==this.cardActuelle.getNumero() || this.unoPlayers.get(cpt).getCard(numero).getNumero() == this.cardActuelle.getNumero() )
-                {
-                    this.tabCartes.add(this.cardActuelle);
-                    this.cardActuelle = this.unoPlayers.get(cpt).getCard(numero);
-                    //send la nouvelle carte
-                    this.sendCommand(this.players[cpt],"carteActuelle" ,""+this.cardActuelle.getCouleur(),""+this.cardActuelle.getNumero());
-                    this.unoPlayers.get(cpt).cardRemove(numero);
-                    verif = true;
-                }
-                else if(this.unoPlayers.get(cpt).getCard(numero).getNumero() == 12 && this.unoPlayers.get(cpt).getCard(numero).getCouleur() == this.cardActuelle.getCouleur() || this.unoPlayers.get(cpt).getCard(numero).getNumero() == 14 )
-                {
-                    giveCard(this.unoPlayers.get(cpt).getCard(numero).getNumero(), cpt);
-                    verif = true;
-                }
-                else if(this.unoPlayers.get(cpt).getCard(numero).getNumero() == 10 || this.unoPlayers.get(cpt).getCard(numero).getNumero() == 11)
-                {
-                    verif = false;
-                }
-                this.sendCommand("setCardActuelle",this.cardActuelle.toString());
-            }
-        }
+        System.out.println("TOUR");
+        this.sendCommand(this.unoPlayers.get(cpt).getPlayer(), "sendPaquet",this.unoPlayers.get(cpt).getPaquet());
+        //this.sendCommand(this.unoPlayers.get(cpt).getPlayer(), "sendCardActuelle",""+cardActuelle.getCouleur()+""+cardActuelle.getNumero());
 
     }
 
