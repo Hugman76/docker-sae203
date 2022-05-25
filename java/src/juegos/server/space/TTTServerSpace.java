@@ -66,7 +66,10 @@ public class TTTServerSpace extends ServerSpace
     }
 
     public char getPlayerChar(int playerIndex) {
-        return playerIndex == 0 ? PLAYER_1_CELl : PLAYER_2_CELl;
+        if (playerIndex == 0)
+            return PLAYER_1_CELl;
+
+        return PLAYER_2_CELl;
     }
 
     public void placeCell(int lig, int col, char c) {
@@ -96,29 +99,43 @@ public class TTTServerSpace extends ServerSpace
         for(int playerIndex = 0; playerIndex < this.players.length; playerIndex++) {
             this.checkVerticalWins(playerIndex);
             this.checkHorizontalWins(playerIndex);
+            this.checkDiagonalWins(playerIndex);
         }
     }
 
+
     public void checkVerticalWins(int playerIndex) {
-        // TODO: fix
         for(int col = 0; col < this.tabChar[0].length; col++) {
+            boolean win = true;
             for(int lig = 0; lig < 3; lig++) {
                 if(tabChar[lig][col] != this.getPlayerChar(playerIndex))
-                    return;
+                    win = false;
             }
-            this.win(playerIndex);
+            if (win) {
+                this.win(playerIndex);
+            }
         }
     }
 
     public void checkHorizontalWins(int playerIndex) {
-        // TODO: fix
         for(int lig = 0; lig < this.tabChar.length; lig++) {
+            boolean win = true;
             for(int col = 0; col < 3; col++) {
                 if(tabChar[lig][col] != this.getPlayerChar(playerIndex))
-                    return;
+                    win = false;
             }
-            this.win(playerIndex);
+            if (win) {
+                this.win(playerIndex);
+            }
         }
+    }
+
+    public void checkDiagonalWins(int playerIndex)
+    {
+        if (tabChar[0][0] == tabChar[1][1] && tabChar[0][0] == tabChar[2][2] && tabChar[0][0] == this.getPlayerChar(playerIndex))
+            this.win(playerIndex);
+        if (tabChar[2][0] == tabChar[1][1] && tabChar[2][0] == tabChar[0][2] && tabChar[2][0] == this.getPlayerChar(playerIndex))
+            this.win(playerIndex);
     }
 
     public String cellsToString(ServerPlayer player) {
