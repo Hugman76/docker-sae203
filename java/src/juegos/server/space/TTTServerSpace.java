@@ -5,8 +5,7 @@ import juegos.server.ServerPlayer;
 
 import java.util.Arrays;
 
-public class TTTServerSpace extends ServerSpace
-{
+public class TTTServerSpace extends ServerSpace {
     private static final char EMPTY_CELl = ' ';
     private static final char PLAYER_1_CELl = 'X';
     private static final char PLAYER_2_CELl = 'O';
@@ -18,7 +17,8 @@ public class TTTServerSpace extends ServerSpace
         super(ServerSpaceType.TIC_TAC_TOE);
 
         this.tabChar = new char[3][3];
-        for(char[] line : tabChar) Arrays.fill(line, ' ');
+        for (char[] line : tabChar)
+            Arrays.fill(line, ' ');
 
         this.turn = 0;
         this.players = new ServerPlayer[2];
@@ -31,8 +31,8 @@ public class TTTServerSpace extends ServerSpace
 
     @Override
     public void handleCommand(ServerPlayer player, String[] args) {
-        if(args[0].equals(SharedConstants.TIC_TAC_TOE_CMD_CELL)) {
-            if(args[1].equals(SharedConstants.TIC_TAC_TOE_CMD_CELL_PUT)) {
+        if (args[0].equals(SharedConstants.TIC_TAC_TOE_CMD_CELL)) {
+            if (args[1].equals(SharedConstants.TIC_TAC_TOE_CMD_CELL_PUT)) {
                 int lig = Integer.parseInt(args[2]);
                 int col = Integer.parseInt(args[3]);
                 placeCell(lig, col, getPlayerChar(getPlayerIndex(player)));
@@ -43,8 +43,8 @@ public class TTTServerSpace extends ServerSpace
     @Override
     public void handleJoin(ServerPlayer player) {
         super.handleJoin(player);
-        for(int i = 0; i < this.players.length; i++) {
-            if(this.players[i] == null) {
+        for (int i = 0; i < this.players.length; i++) {
+            if (this.players[i] == null) {
                 this.players[i] = player;
                 this.sendCells(player);
                 break;
@@ -59,8 +59,8 @@ public class TTTServerSpace extends ServerSpace
     }
 
     public int getPlayerIndex(ServerPlayer player) {
-        for(int i = 0; i < this.players.length; i++)
-            if(this.players[i] == player)
+        for (int i = 0; i < this.players.length; i++)
+            if (this.players[i] == player)
                 return i;
         return -1;
     }
@@ -73,7 +73,7 @@ public class TTTServerSpace extends ServerSpace
     }
 
     public void placeCell(int lig, int col, char c) {
-        if(this.tabChar[lig][col] == EMPTY_CELl) {
+        if (this.tabChar[lig][col] == EMPTY_CELl) {
             this.tabChar[lig][col] = c;
             this.nextTurn();
             this.getPlayers().forEach(this::sendCells);
@@ -95,20 +95,27 @@ public class TTTServerSpace extends ServerSpace
         this.destroy(player);
     }
 
+    public void tie(int playerIndex) {
+        ServerPlayer player = this.players[playerIndex];
+        this.sendCommand(SharedConstants.LOSE);
+        player.join(ServerSpaceType.LOBBY);
+        this.destroy(player);
+    }
+
     public void checkWin() {
-        for(int playerIndex = 0; playerIndex < this.players.length; playerIndex++) {
+        for (int playerIndex = 0; playerIndex < this.players.length; playerIndex++) {
             this.checkVerticalWins(playerIndex);
             this.checkHorizontalWins(playerIndex);
             this.checkDiagonalWins(playerIndex);
+            this.checkTie((playerIndex));
         }
     }
 
-
     public void checkVerticalWins(int playerIndex) {
-        for(int col = 0; col < this.tabChar[0].length; col++) {
+        for (int col = 0; col < this.tabChar[0].length; col++) {
             boolean win = true;
-            for(int lig = 0; lig < 3; lig++) {
-                if(tabChar[lig][col] != this.getPlayerChar(playerIndex))
+            for (int lig = 0; lig < 3; lig++) {
+                if (tabChar[lig][col] != this.getPlayerChar(playerIndex))
                     win = false;
             }
             if (win) {
@@ -118,10 +125,10 @@ public class TTTServerSpace extends ServerSpace
     }
 
     public void checkHorizontalWins(int playerIndex) {
-        for(int lig = 0; lig < this.tabChar.length; lig++) {
+        for (int lig = 0; lig < this.tabChar.length; lig++) {
             boolean win = true;
-            for(int col = 0; col < 3; col++) {
-                if(tabChar[lig][col] != this.getPlayerChar(playerIndex))
+            for (int col = 0; col < 3; col++) {
+                if (tabChar[lig][col] != this.getPlayerChar(playerIndex))
                     win = false;
             }
             if (win) {
@@ -130,21 +137,35 @@ public class TTTServerSpace extends ServerSpace
         }
     }
 
-    public void checkDiagonalWins(int playerIndex)
-    {
-        if (tabChar[0][0] == tabChar[1][1] && tabChar[0][0] == tabChar[2][2] && tabChar[0][0] == this.getPlayerChar(playerIndex))
+    public void checkDiagonalWins(int playerIndex) {
+        if (tabChar[0][0] == tabChar[1][1] && tabChar[0][0] == tabChar[2][2]
+                && tabChar[0][0] == this.getPlayerChar(playerIndex))
             this.win(playerIndex);
-        if (tabChar[2][0] == tabChar[1][1] && tabChar[2][0] == tabChar[0][2] && tabChar[2][0] == this.getPlayerChar(playerIndex))
+        if (tabChar[2][0] == tabChar[1][1] && tabChar[2][0] == tabChar[0][2]
+                && tabChar[2][0] == this.getPlayerChar(playerIndex))
             this.win(playerIndex);
+    }
+
+    public void checkTie(int playerIndex) {
+        for (int col = 0; col < this.tabChar[0].length; col++) {
+            boolean tie = true;
+            for (int lig = 0; lig < 3; lig++) {
+                if (tabChar[lig][col] == ' ')
+                    tie = false;
+            }
+            if (tie) {
+                this.tie(playerIndex);
+            }
+        }
     }
 
     public String cellsToString(ServerPlayer player) {
         StringBuilder s = new StringBuilder();
-        for(int x = 0; x < this.tabChar.length; x++) {
-            for(int y = 0; y < this.tabChar.length; y++) {
+        for (int x = 0; x < this.tabChar.length; x++) {
+            for (int y = 0; y < this.tabChar.length; y++) {
                 s.append(this.tabChar[x][y]);
             }
-            if(x < this.tabChar.length - 1) {
+            if (x < this.tabChar.length - 1) {
                 s.append(SharedConstants.ARGUMENT_DELIMITER);
             }
         }
@@ -158,4 +179,3 @@ public class TTTServerSpace extends ServerSpace
                 this.cellsToString(player));
     }
 }
-
