@@ -12,27 +12,41 @@ public class UnoClientSpace extends ClientSpace
 	
 	
 	private UnoCarte cardActuelle;
+	private int 	 id;
     private ArrayList<UnoCarte> tabPaquet = new ArrayList<>();
-	private final ArrayList<JButton> tabJButtons = new ArrayList<>();
-	private JLabel lblCarteActuelle;
+	private ArrayList<JButton> tabJButtons = new ArrayList<JButton>();
+	private Image img11 = Toolkit.getDefaultToolkit().getImage("data/images/uno/B1.png");
+	private JLabel lblCarteActuelle = new JLabel();
+	private boolean request = false;
+	private int nbCartes = 7;
 
 	public UnoClientSpace() 
 	{
 		super(ClientSpaceType.UNO);
+		System.out.println("UnoCLientSpace");
+		
 	}
 
 	@Override
 	public void handleCommand(String[] args) 
 	{
-		//this.updateCard(args[2]);
-		if(args[1].equals("setCardActuelle"))
+		//System.out.println(args[0]);
+		if(args[0].equals("sendCardActuelle"))
 		{
-			this.updateCard(args[2].charAt(0), Integer.parseInt(args[3]));
+			this.updateCarteActuelle(args[1]);
+			System.out.println("YES");
 		}
-		if(args[1].equals("sendPaquet"))
+		if(args[0].equals("sendPaquet"))
 		{
-			this.updatePaquet(args[2]);
+			this.updatePaquet(args[1]);
+			System.out.println(args[1]);
+			System.out.println("Talle du paquet"+this.tabPaquet.size());
 		}
+	}
+	public void updateCarteActuelle(String im)
+	{
+		Image img = Toolkit.getDefaultToolkit().getImage("data/images/uno/"+im+".png");
+		this.lblCarteActuelle.setIcon(new ImageIcon(img));		
 	}
 	
 
@@ -42,22 +56,25 @@ public class UnoClientSpace extends ClientSpace
 		this.cardActuelle.setNumero(newCardNum);
 		
 	}
-	private void updatePaquet()
-	{
-		this.sendCommand("getPaquet");
-	}
 	public void updatePaquet(String args)
 	{
+		System.out.print("update");
 		String delims = "[,]";
 		String[] tokens = args.split(delims);
-
-		for(int i = 0;i< this.tabPaquet.size();i++) this.tabPaquet.remove(i);
+		System.out.println("Tokens :");
+		
+		System.out.println("Update paquet de carte");
+		//for(int i = 0;i<this.tabJButtons.size();i++) this.tabJButtons.remove(i);
 		for(int i = 0; i< tokens.length;i++)
 		{
+			//System.out.println(tokens[i]);
 			this.tabPaquet.add(new UnoCarte(tokens[i]));
+			System.out.println("carte "+this.tabPaquet.get(i).toString()+" "+this.tabPaquet.size());
+			
 			Image img = Toolkit.getDefaultToolkit().getImage("data/images/uno/"+this.tabPaquet.get(i).toString()+".png");
-			//paquetPanel.add(new JButton(new ImageIcon(img)));
-			this.tabJButtons.add(new JButton(new ImageIcon(img)));
+			this.tabJButtons.add(new JButton());
+			this.tabJButtons.get(i).setIcon(new ImageIcon(img.getScaledInstance(50, 50, Image.SCALE_SMOOTH)));
+			
 		}
 		
 	}
@@ -66,31 +83,31 @@ public class UnoClientSpace extends ClientSpace
 	public JPanel getUI() 
 	{
 		JPanel mainPanel    = new JPanel(new GridLayout(3,1));
-		JPanel plateauPanel = new JPanel();
+		//JPanel plateauPanel = new JPanel();
 		JPanel paquetPanel  = new JPanel();
-		this.cardActuelle = new UnoCarte("B4");
-		this.lblCarteActuelle = new JLabel(new ImageIcon("data/images/uno/"+this.cardActuelle.toString()+".png"));
-		//JPanel actionPanel  = new JPanel();
+		JButton btnOk       = new JButton();
+		//this.cardActuelle = new UnoCarte("B4");
+		System.out.println("getUI");
+		JLabel lblCarte = this.lblCarteActuelle;
+		int nb = this.tabJButtons.size();
+		System.out.println(nb);
 		
-	
-		plateauPanel.setLayout(new BorderLayout());
-		paquetPanel.setLayout(new FlowLayout());
-
-		plateauPanel.add(this.lblCarteActuelle);
-		updatePaquet();
-		for(int x = 0; x < this.tabJButtons.size();x++)
+		
+		for(int i =0; i<7;i++)
 		{
-			int finalX = x;
 			
-			this.tabJButtons.get(x).addActionListener(e -> this.sendCommand("sendCard",String.valueOf(finalX)));
-			paquetPanel.add(this.tabJButtons.get(x));
+			this.tabJButtons.add(new JButton());
+			paquetPanel.add(this.tabJButtons.get(i));
+
 		}
-		mainPanel.add(new JLabel("Uno"));
-		mainPanel.add(plateauPanel);
+
+		btnOk.addActionListener(e -> this.sendCommand("getOK"));
+
+		mainPanel.add(btnOk);
+		mainPanel.add(lblCarte);
 		mainPanel.add(paquetPanel);
-
 		
-
+		
 		return mainPanel;
 	}
 }

@@ -13,8 +13,19 @@ public class UnoCarte
     }
     public UnoCarte(String carte)
     {
+
         this.couleur = carte.charAt(0);
-        this.numero  = carte.charAt(1);
+        if(carte.length() == 3)
+        {
+            this.numero  +=  Character.getNumericValue(carte.charAt(1)) *10;
+            this.numero  +=  Character.getNumericValue(carte.charAt(2)) ;
+        }
+        else
+        {
+            this.numero  =  Character.getNumericValue(carte.charAt(1));
+        }
+       
+        //System.out.println("Carte : "+carte +" num " + this.numero + " couleur "+this.couleur);
     }
     public char getCouleur()
     {
@@ -34,6 +45,6 @@ public class UnoCarte
     }
     public String toString()
     {
-        return ""+this.couleur+this.numero;
+        return ""+this.couleur+""+this.numero;
     }    
 }
