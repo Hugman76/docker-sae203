@@ -14,6 +14,7 @@ public class UnoClientSpace extends ClientSpace
 	private final ArrayList<JButton> btnDecks = new ArrayList<>();
 
 	private JPanel deckPanel;
+	private JButton drawButton;
 
 	public UnoClientSpace() {
 		super(ClientSpaceType.UNO);
@@ -37,21 +38,23 @@ public class UnoClientSpace extends ClientSpace
 	}
 
 	public void setTopCard(UnoCard card) {
-		Image img = Toolkit.getDefaultToolkit().getImage("data/images/uno/" + card.toString() + ".png");
+		Image img = Toolkit.getDefaultToolkit().getImage("data/images/uno/card/" + card.toString() + ".png");
 		this.lblTopCard.setIcon(new ImageIcon(img));
 	}
 
 	public void setDeck(ArrayList<UnoCard> deck) {
 		this.deckPanel.removeAll();
 		for(UnoCard card : deck) {
-			Image img = Toolkit.getDefaultToolkit().getImage("data/images/uno/card" + card.toString() + ".png");
+			Image img = Toolkit.getDefaultToolkit().getImage("data/images/uno/card/" + card.toString() + ".png");
 			JButton cardButton = new JButton(new ImageIcon(img.getScaledInstance(50, 50, Image.SCALE_SMOOTH)));
 			cardButton.addActionListener(e -> this.sendCommand(SharedConstants.UNO_CMD_CARD_PLAY, card.toString()));
 			this.deckPanel.add(cardButton);
+			this.deckPanel.revalidate();
 		}
 	}
 
 	public void lock(boolean b) {
+		this.drawButton.setEnabled(b);
 		for(Component component : this.deckPanel.getComponents()) {
 			component.setEnabled(b);
 		}
@@ -62,12 +65,12 @@ public class UnoClientSpace extends ClientSpace
 		JPanel mainPanel = new JPanel(new GridLayout(3, 1));
 		//JPanel plateauPanel = new JPanel();
 		deckPanel = new JPanel();
-		JButton btnOk = new JButton();
+		this.drawButton = new JButton();
 		//this.cardActuelle = new UnoCarte("B4");
 
-		btnOk.addActionListener(e -> this.sendCommand("getOK"));
+		this.drawButton.addActionListener(e -> this.sendCommand(SharedConstants.UNO_CMD_CARD, SharedConstants.UNO_CMD_CARD_DRAW));
 
-		mainPanel.add(btnOk);
+		mainPanel.add(this.drawButton);
 		mainPanel.add(this.lblTopCard);
 		mainPanel.add(deckPanel);
 

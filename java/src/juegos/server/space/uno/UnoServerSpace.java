@@ -42,6 +42,20 @@ public class UnoServerSpace extends ServerSpace
 	}
 
 	@Override
+	public void handleCommand(ServerPlayer player, String[] args) {
+		if(args[0].equals(SharedConstants.UNO_CMD_CARD)) {
+			if(args[1].equals(SharedConstants.UNO_CMD_CARD_PLAY)) {
+				UnoCard card = UnoCard.fromString(args[2]);
+				this.play(this.getPlayerIndex(player), card);
+			}
+
+			if(args[1].equals(SharedConstants.UNO_CMD_CARD_DRAW)) {
+				this.draw(this.getUnoPlayer(player));
+			}
+		}
+	}
+
+	@Override
 	public void handleJoin(ServerPlayer player) {
 		super.handleJoin(player);
 
@@ -56,23 +70,17 @@ public class UnoServerSpace extends ServerSpace
 			}
 		}
 	}
-
-
-	@Override
-	public void handleCommand(ServerPlayer player, String[] args) {
-		if(args[0].equals(SharedConstants.UNO_CMD_CARD)) {
-			if(args[1].equals(SharedConstants.UNO_CMD_CARD_PLAY)) {
-				UnoCard card = UnoCard.fromString(args[2]);
-				this.play(this.getPlayerIndex(player), card);
-			}
-		}
-	}
-
+	
 	@Override
 	public void handleLeave(ServerPlayer player) {
 		super.handleLeave(player);
 		this.unoPlayers[this.getPlayerIndex(player)] = null;
 	}
+
+	public UnoPlayer getUnoPlayer(ServerPlayer player) {
+		return this.unoPlayers[this.getPlayerIndex(player)];
+	}
+
 
 	public int getPlayerIndex(ServerPlayer player) {
 		for(int i = 0; i < this.unoPlayers.length; i++) {
