@@ -65,12 +65,25 @@ public class UnoServerSpace extends ServerSpace
 				for(int j = 0; j < 7; j++) {
 					this.draw(this.unoPlayers[i]);
 				}
-				this.sendCards(this.unoPlayers[i]);
 				break;
 			}
 		}
+
+		boolean allReady = true;
+		for(UnoPlayer unoPlayer : this.unoPlayers) {
+			if(unoPlayer == null) {
+				allReady = false;
+				break;
+			}
+		}
+		if(allReady) {
+			this.turn = 0;
+			for(UnoPlayer p : this.unoPlayers) {
+				this.sendCards(p);
+			}
+		}
 	}
-	
+
 	@Override
 	public void handleLeave(ServerPlayer player) {
 		super.handleLeave(player);

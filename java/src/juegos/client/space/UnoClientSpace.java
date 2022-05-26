@@ -69,6 +69,7 @@ public class UnoClientSpace extends ClientSpace
 		//this.cardActuelle = new UnoCarte("B4");
 
 		this.drawButton.addActionListener(e -> this.sendCommand(SharedConstants.UNO_CMD_CARD, SharedConstants.UNO_CMD_CARD_DRAW));
+		this.drawButton.setEnabled(false);
 
 		mainPanel.add(this.drawButton);
 		mainPanel.add(this.lblTopCard);
