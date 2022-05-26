@@ -12,7 +12,7 @@ public class SharedConstants
 	/**
 	 * Cette variable est utilisée pour envoyer plus d'informations utiles au développement dans les logs.
 	 */
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
 	public static final String COMMAND_DELIMITER = ":";
 	public static final String ARGUMENT_DELIMITER = "'";
@@ -47,7 +47,10 @@ public class SharedConstants
 	/**
 	 * <a href="https://fr.wikipedia.org/wiki/Uno">Uno</a>
 	 */
-	public static final String UNO = "U";
+	public static final String UNO = "uno";
+	public static final String UNO_CMD_CARD = "card";
+	public static final String UNO_CMD_CARD_ALL = "all";
+	public static final String UNO_CMD_CARD_PLAY = "play";
 
 	public static void info(String s) {
 		System.out.println(s);

@@ -1,6 +1,8 @@
 package juegos.client.space;
 
-import juegos.common.UnoCarte;
+import juegos.client.util.GUIUtils;
+import juegos.common.SharedConstants;
+import juegos.common.UnoCard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,94 +10,66 @@ import java.util.ArrayList;
 
 public class UnoClientSpace extends ClientSpace
 {
-	private UnoCarte cardActuelle;
-	private int id;
-	private final ArrayList<UnoCarte> tabPaquet = new ArrayList<>();
-	private final ArrayList<JButton> tabJButtons = new ArrayList<JButton>();
-	private final Image img11 = Toolkit.getDefaultToolkit().getImage("data/images/uno/B1.png");
-	private final JLabel lblCarteActuelle = new JLabel();
-	private final boolean request = false;
-	private final int nbCartes = 7;
+	private final JLabel lblTopCard = new JLabel();
+	private final ArrayList<JButton> btnDecks = new ArrayList<>();
+
+	private JPanel deckPanel;
 
 	public UnoClientSpace() {
 		super(ClientSpaceType.UNO);
-		System.out.println("UnoCLientSpace");
-
 	}
 
 	@Override
 	public void handleCommand(String[] args) {
-		//System.out.println(args[0]);
-		if(args[0].equals("sendCardActuelle")) {
-			this.updateCarteActuelle(args[1]);
-			System.out.println("YES");
+		if(args[0].equals(SharedConstants.UNO_CMD_CARD)) {
+			if(args[1].equals(SharedConstants.UNO_CMD_CARD_ALL)) {
+				this.setTopCard(UnoCard.fromString(args[2]));
+				this.setDeck(UnoCard.listFromString(args[3]));
+				this.lock(Boolean.parseBoolean(args[4]));
+			}
 		}
-		if(args[0].equals("sendPaquet")) {
-			this.updatePaquet(args[1]);
-			System.out.println(args[1]);
-			System.out.println("Talle du paquet" + this.tabPaquet.size());
+		if(args[0].equals(SharedConstants.WIN)) {
+			GUIUtils.showPopup("Victoire !", "Vous avez gagné !");
+		}
+		if(args[0].equals(SharedConstants.LOSE)) {
+			GUIUtils.showPopup("Défaite...", "Vous avez perdu...\nLe vainqueur est " + args[1] + ".");
 		}
 	}
 
-	public void updateCarteActuelle(String im) {
-		Image img = Toolkit.getDefaultToolkit().getImage("data/images/uno/" + im + ".png");
-		this.lblCarteActuelle.setIcon(new ImageIcon(img));
+	public void setTopCard(UnoCard card) {
+		Image img = Toolkit.getDefaultToolkit().getImage("data/images/uno/" + card.toString() + ".png");
+		this.lblTopCard.setIcon(new ImageIcon(img));
 	}
 
-
-	public void updateCard(char newCardCar, int newCardNum) {
-		this.cardActuelle.setCouleur(newCardCar);
-		this.cardActuelle.setNumero(newCardNum);
-
-	}
-
-	public void updatePaquet(String args) {
-		System.out.print("update");
-		String delims = "[,]";
-		String[] tokens = args.split(delims);
-		System.out.println("Tokens :");
-
-		System.out.println("Update paquet de carte");
-		//for(int i = 0;i<this.tabJButtons.size();i++) this.tabJButtons.remove(i);
-		for(int i = 0; i < tokens.length; i++) {
-			//System.out.println(tokens[i]);
-			this.tabPaquet.add(new UnoCarte(tokens[i]));
-			System.out.println("carte " + this.tabPaquet.get(i).toString() + " " + this.tabPaquet.size());
-
-			Image img = Toolkit.getDefaultToolkit().getImage("data/images/uno/" + this.tabPaquet.get(i).toString() + ".png");
-			this.tabJButtons.add(new JButton());
-			this.tabJButtons.get(i).setIcon(new ImageIcon(img.getScaledInstance(50, 50, Image.SCALE_SMOOTH)));
-
+	public void setDeck(ArrayList<UnoCard> deck) {
+		this.deckPanel.removeAll();
+		for(UnoCard card : deck) {
+			Image img = Toolkit.getDefaultToolkit().getImage("data/images/uno/card" + card.toString() + ".png");
+			JButton cardButton = new JButton(new ImageIcon(img.getScaledInstance(50, 50, Image.SCALE_SMOOTH)));
+			cardButton.addActionListener(e -> this.sendCommand(SharedConstants.UNO_CMD_CARD_PLAY, card.toString()));
+			this.deckPanel.add(cardButton);
 		}
+	}
 
+	public void lock(boolean b) {
+		for(Component component : this.deckPanel.getComponents()) {
+			component.setEnabled(b);
+		}
 	}
 
 	@Override
 	public JPanel getUI() {
 		JPanel mainPanel = new JPanel(new GridLayout(3, 1));
 		//JPanel plateauPanel = new JPanel();
-		JPanel paquetPanel = new JPanel();
+		deckPanel = new JPanel();
 		JButton btnOk = new JButton();
 		//this.cardActuelle = new UnoCarte("B4");
-		System.out.println("getUI");
-		JLabel lblCarte = this.lblCarteActuelle;
-		int nb = this.tabJButtons.size();
-		System.out.println(nb);
-
-
-		for(int i = 0; i < 7; i++) {
-
-			this.tabJButtons.add(new JButton());
-			paquetPanel.add(this.tabJButtons.get(i));
-
-		}
 
 		btnOk.addActionListener(e -> this.sendCommand("getOK"));
 
 		mainPanel.add(btnOk);
-		mainPanel.add(lblCarte);
-		mainPanel.add(paquetPanel);
-
+		mainPanel.add(this.lblTopCard);
+		mainPanel.add(deckPanel);
 
 		return mainPanel;
 	}

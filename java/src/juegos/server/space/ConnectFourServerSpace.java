@@ -42,7 +42,7 @@ public class ConnectFourServerSpace extends ServerSpace
 		for(int i = 0; i < this.players.length; i++) {
 			if(this.players[i] == null) {
 				this.players[i] = player;
-				this.sendCells(player);
+				this.sendCellsAndLocks(player);
 				break;
 			}
 		}
@@ -92,33 +92,9 @@ public class ConnectFourServerSpace extends ServerSpace
 		}
 		if(canPlace) {
 			this.nextTurn();
-			this.getPlayers().forEach(this::sendCells);
+			this.getPlayers().forEach(this::sendCellsAndLocks);
 			this.checkWin();
 		}
-	}
-
-	public void sendLocks(ServerPlayer player) {
-		boolean[] locked = new boolean[this.tileSet.length];
-		Arrays.fill(locked, true);
-		if(this.turn == this.getPlayerIndex(player)) {
-			for(int x = 0; x < this.tileSet.length; x++) {
-				for(int y = 0; y < this.tileSet[x].length; y++) {
-					if(this.tileSet[x][y] == EMPTY_CELL) {
-						locked[x] = false;
-						break;
-					}
-				}
-			}
-		}
-
-		StringBuilder lockedInts   = new StringBuilder();
-		StringBuilder unlockedInts = new StringBuilder();
-		for(int i = 0; i < locked.length; i++) {
-			if(locked[i]) lockedInts.append(i).append(SharedConstants.ARGUMENT_DELIMITER);
-			else unlockedInts.append(i).append(SharedConstants.ARGUMENT_DELIMITER);
-		}
-		if(!lockedInts.isEmpty())   this.sendCommand(player, SharedConstants.CONNECT_FOUR_CMD_COLUMN, SharedConstants.CONNECT_FOUR_CMD_COLUMN_LOCK, lockedInts.toString(),   String.valueOf(true));
-		if(!unlockedInts.isEmpty()) this.sendCommand(player, SharedConstants.CONNECT_FOUR_CMD_COLUMN, SharedConstants.CONNECT_FOUR_CMD_COLUMN_LOCK, unlockedInts.toString(), String.valueOf(false));
 	}
 
 	public void win(int playerIndex) {
@@ -201,7 +177,15 @@ public class ConnectFourServerSpace extends ServerSpace
 		}
 	}
 
-	public String cellsToString(ServerPlayer player) {
+	public void sendCellsAndLocks(ServerPlayer player) {
+		this.sendCommand(player,
+				SharedConstants.CONNECT_FOUR_CMD_CELL,
+				SharedConstants.CONNECT_FOUR_CMD_CELL_ALL,
+				this.cellsToString());
+		this.sendLocks(player);
+	}
+
+	public String cellsToString() {
 		StringBuilder s = new StringBuilder();
 		for(int x = 0; x < this.tileSet.length; x++) {
 			for(int y = 0; y < this.tileSet[x].length; y++) {
@@ -214,11 +198,27 @@ public class ConnectFourServerSpace extends ServerSpace
 		return s.toString();
 	}
 
-	public void sendCells(ServerPlayer player) {
-		this.sendCommand(player,
-				SharedConstants.CONNECT_FOUR_CMD_CELL,
-				SharedConstants.CONNECT_FOUR_CMD_CELL_ALL,
-				this.cellsToString(player));
-		this.sendLocks(player);
+	public void sendLocks(ServerPlayer player) {
+		boolean[] locked = new boolean[this.tileSet.length];
+		Arrays.fill(locked, true);
+		if(this.turn == this.getPlayerIndex(player)) {
+			for(int x = 0; x < this.tileSet.length; x++) {
+				for(int y = 0; y < this.tileSet[x].length; y++) {
+					if(this.tileSet[x][y] == EMPTY_CELL) {
+						locked[x] = false;
+						break;
+					}
+				}
+			}
+		}
+
+		StringBuilder lockedInts   = new StringBuilder();
+		StringBuilder unlockedInts = new StringBuilder();
+		for(int i = 0; i < locked.length; i++) {
+			if(locked[i]) lockedInts.append(i).append(SharedConstants.ARGUMENT_DELIMITER);
+			else unlockedInts.append(i).append(SharedConstants.ARGUMENT_DELIMITER);
+		}
+		if(!lockedInts.isEmpty())   this.sendCommand(player, SharedConstants.CONNECT_FOUR_CMD_COLUMN, SharedConstants.CONNECT_FOUR_CMD_COLUMN_LOCK, lockedInts.toString(),   String.valueOf(true));
+		if(!unlockedInts.isEmpty()) this.sendCommand(player, SharedConstants.CONNECT_FOUR_CMD_COLUMN, SharedConstants.CONNECT_FOUR_CMD_COLUMN_LOCK, unlockedInts.toString(), String.valueOf(false));
 	}
 }
