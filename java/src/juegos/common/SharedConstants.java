@@ -12,7 +12,7 @@ public class SharedConstants
 	/**
 	 * Cette variable est utilisée pour envoyer plus d'informations utiles au développement dans les logs.
 	 */
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
 	public static final String COMMAND_DELIMITER = ":";
 	public static final String ARGUMENT_DELIMITER = "'";
