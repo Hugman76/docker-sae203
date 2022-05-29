@@ -6,14 +6,16 @@
 
 Développé par Hugo LANDRIN
 
+> *NOTE : la détection des victoires en diagonales ne marche pas, pour l'instant.* 
+
 # Morpion
 
 Développé par Louis HAGUES
 
-# Bataille
-
-Développé par Thibault CARPENTIER
-
 # UNO
 
 Développé par Adrien Rovira
+
+# Bataille
+
+Développé par Thibault CARPENTIER
