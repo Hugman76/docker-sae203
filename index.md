@@ -41,6 +41,9 @@ Alors... que faire ? Voici quelques idées :
   - Ajouter de sons 
 - Un système de comptes
   - Mot de passe, amis, groupes
+- Construction automatique et publication du programme client en `.jar` à l'aide des actions GitHub.
+
+Il est également possible que nous changions le nom du dépôt, pour correspondre au nom du projet.
 
 ## Auteurs
 > D2 - LANDRIN Hugo ([@Hugman76](https://github.com/Hugman76))  
