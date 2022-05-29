@@ -26,6 +26,22 @@ installer soi-même Juegos et comment il fonctionne.
     - Développement d'unités autonomes (utilisation de `Thread`)
     - Développement d'une interface graphique pour le client
 
+## Et après ?
+A cette heure, le projet a pour but de remplir la consigne du SAE 2.03. Cependant, nous nous sommes rapidement
+attachés à l'idée derrière ce projet, et nous souhaiterions continuer son développement.
+
+Alors... que faire ? Voici quelques idées :
+
+- Ajouter des nouveaux jeux
+  - Jeux de dames, échecs, Mastermind, Monopoly et même des courses de voitures
+- Améliorer l'interface
+  - Création de logos pour les jeux
+  - Création d'un menu qui peut être ouvert à n'importe quel moment
+    - Afficher la liste des joueurs en ligne
+  - Ajouter de sons 
+- Un système de comptes
+  - Mot de passe, amis, groupes
+
 ## Auteurs
 > D2 - LANDRIN Hugo ([@Hugman76](https://github.com/Hugman76))  
 > D2 - ROVIRA Adrien ([@AdrienRov](https://github.com/AdrienRov))  
