@@ -56,14 +56,11 @@ public class JuegosClient
 	 */
 	public static void connect(String username, String host, int port) {
 		// Créer le serveur
-		try {
-
-
-			SharedConstants.info("Connexion au serveur " + host + ":" + port);
-			Socket socket = new Socket(host, port);
+		SharedConstants.info("Tentative de connexion au serveur " + host + ":" + port + "...");
+		try (Socket socket = new Socket(host, port)){
+			SharedConstants.info("Connexion établie !");
 			INSTANCE.writer = new PrintWriter(socket.getOutputStream(), true);
 			INSTANCE.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			SharedConstants.info("Connexion établie !");
 			JuegosClient.sendCommand(CommandType.USERNAME.create(username));
 			INSTANCE.readingThread = new Thread(() -> {
 				while(true) {
