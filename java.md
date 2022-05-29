@@ -14,7 +14,7 @@ Un *thread* est un processus qui part d'un début d'algorithme et réalise toute
 Tout algorithme Java que l'on exécute se retrouve donc encapsulé dans un *thread*. La subtilité est qu'il est possible de créer d'autres *threads* !
 
 Nous avons consulté cette vidéo (en anglais) expliquant la classe `Thread` de Java afin de pouvoir l'utiliser :
-<iframe width="420" height="315" src="https://www.youtube.com/embed/r_MbozD32eo"> </iframe>
+<iframe width="420" height="240" src="https://www.youtube.com/embed/r_MbozD32eo"> </iframe>
 
 Avec ces nouvelles compétences, nous avons alors dessiné l'esquisse de notre système de connections multiples :
 ```java
