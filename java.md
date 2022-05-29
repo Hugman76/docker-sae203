@@ -2,6 +2,10 @@
 
 [Revenir sur la page principale](./index.md)
 
+## Schéma du fonctionnement
+
+![Schéma du fonctionnement](./images/fonctionnement_java.png)
+
 ## Threads
 Lors du développement de Juegos, nous sommes tombés sur le problème suivant : le serveur ne pouvait accepter qu'un seul joueur.
 Nous avons alors fait quelques recherches sur internet et sommes tombés sur le concept des ***threads***.
