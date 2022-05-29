@@ -51,6 +51,7 @@ public class SharedConstants
 	public static final String UNO_CMD_CARD = "card";
 	public static final String UNO_CMD_CARD_ALL = "all";
 	public static final String UNO_CMD_CARD_PLAY = "play";
+	public static final String UNO_CMD_CARD_DRAW = "draw";
 
 	public static void info(String s) {
 		System.out.println(s);
