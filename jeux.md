@@ -10,12 +10,8 @@ Développé par Hugo LANDRIN
 
 # Morpion
 
-Développé par Louis HAGUES
+Développé par Louis HAGUES et Thibault CARPENTIER
 
 # UNO
 
 Développé par Adrien Rovira
-
-# Bataille
-
-Développé par Thibault CARPENTIER
