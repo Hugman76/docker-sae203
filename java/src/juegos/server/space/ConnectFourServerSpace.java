@@ -1,5 +1,6 @@
 package juegos.server.space;
 
+import juegos.common.ArrayLineFinder;
 import juegos.common.SharedConstants;
 import juegos.server.ServerPlayer;
 
@@ -11,20 +12,21 @@ import java.util.Arrays;
  */
 public class ConnectFourServerSpace extends ServerSpace
 {
-	private static final int EMPTY_CELL = -1;
-	private static final int WIN_CELL_LENGTH = 4;
-	private final int[][] tileSet;
+	private final ArrayLineFinder lineFinder;
 	private final ServerPlayer[] players;
+	private final int[][] tileSet;
 	private int turn;
 
 	public ConnectFourServerSpace(int maxPlayers) {
 		super(ServerSpaceType.CONNECT_FOUR);
+		this.lineFinder = new ArrayLineFinder(-1, 4, true);
+		this.players = new ServerPlayer[maxPlayers];
+		this.turn = 0;
+
 		this.tileSet = new int[SharedConstants.CONNECT_FOUR_WIDTH][SharedConstants.CONNECT_FOUR_HEIGHT];
 		for(int[] charLine : this.tileSet) {
-			Arrays.fill(charLine, EMPTY_CELL);
+			Arrays.fill(charLine, this.lineFinder.getEmptyValue());
 		}
-		this.turn = 0;
-		this.players = new ServerPlayer[maxPlayers];
 	}
 
 	public ConnectFourServerSpace() {
@@ -84,7 +86,7 @@ public class ConnectFourServerSpace extends ServerSpace
 	public void dropTile(int playerIndex, int x) {
 		boolean canPlace = false;
 		for(int y = 0; y < this.tileSet[x].length; y++) {
-			if(this.tileSet[x][y] == EMPTY_CELL) {
+			if(this.tileSet[x][y] == this.lineFinder.getEmptyValue()) {
 				this.tileSet[x][y] = playerIndex;
 				canPlace = true;
 				break;
@@ -93,7 +95,7 @@ public class ConnectFourServerSpace extends ServerSpace
 		if(canPlace) {
 			this.nextTurn();
 			this.getPlayers().forEach(this::sendCellsAndLocks);
-			this.checkWin();
+			this.lineFinder.find(this.tileSet, this::win);
 		}
 	}
 
@@ -105,76 +107,6 @@ public class ConnectFourServerSpace extends ServerSpace
 		this.sendCommand(player, SharedConstants.WIN);
 		player.join(ServerSpaceType.LOBBY);
 		this.destroy(player);
-	}
-
-	public void checkWin() {
-		for(int x = 0; x < SharedConstants.CONNECT_FOUR_WIDTH; x++) {
-			this.checkVerticalWin(x);
-		}
-		for(int y = 0; y < SharedConstants.CONNECT_FOUR_HEIGHT; y++) {
-			this.checkHorizontalWin(y);
-		}
-		this.checkDiagonalWins();
-	}
-
-	public void checkVerticalWin(int x) {
-		int consecutive = 1;
-		int playerIndex = EMPTY_CELL;
-		for(int y = 0; y < SharedConstants.CONNECT_FOUR_HEIGHT; y++) {
-			int cellValue = this.tileSet[x][y];
-			if(playerIndex != cellValue || cellValue == EMPTY_CELL) {
-				consecutive = 0;
-				playerIndex = cellValue;
-			} else {
-				consecutive++;
-			}
-			if(consecutive == WIN_CELL_LENGTH) {
-				this.win(playerIndex);
-			}
-		}
-	}
-
-	public void checkHorizontalWin(int y) {
-		int consecutive = 1;
-		int playerIndex = EMPTY_CELL;
-		for(int x = 0; x < SharedConstants.CONNECT_FOUR_WIDTH; x++) {
-			int cellValue = this.tileSet[x][y];
-			if(playerIndex != cellValue || cellValue == EMPTY_CELL) {
-				consecutive = 1;
-				playerIndex = cellValue;
-			} else {
-				consecutive++;
-			}
-			if(consecutive == WIN_CELL_LENGTH) {
-				this.win(playerIndex);
-			}
-		}
-	}
-
-	public void checkDiagonalWins() {
-		int consecutive = 1;
-		int playerIndex = EMPTY_CELL;
-		int firstStartY = -(SharedConstants.CONNECT_FOUR_WIDTH - 1);
-		int lastStartY = SharedConstants.CONNECT_FOUR_HEIGHT - 1;
-		for(int startY = firstStartY; startY <= lastStartY; startY++) {
-			int x = 0;
-			for(int y = startY; y < SharedConstants.CONNECT_FOUR_HEIGHT; y++) {
-				if(x < 0 || x >= SharedConstants.CONNECT_FOUR_WIDTH) break;
-				if(y < 0 || y >= SharedConstants.CONNECT_FOUR_HEIGHT) break;
-				int cellValue = this.tileSet[x][y];
-				if(playerIndex != cellValue || cellValue == EMPTY_CELL) {
-					consecutive = 1;
-					playerIndex = cellValue;
-				}
-				else {
-					consecutive++;
-				}
-				if(consecutive == WIN_CELL_LENGTH) {
-					this.win(playerIndex);
-				}
-				x++;
-			}
-		}
 	}
 
 	public void sendCellsAndLocks(ServerPlayer player) {
@@ -204,7 +136,7 @@ public class ConnectFourServerSpace extends ServerSpace
 		if(this.turn == this.getPlayerIndex(player)) {
 			for(int x = 0; x < this.tileSet.length; x++) {
 				for(int y = 0; y < this.tileSet[x].length; y++) {
-					if(this.tileSet[x][y] == EMPTY_CELL) {
+					if(this.tileSet[x][y] == this.lineFinder.getEmptyValue()) {
 						locked[x] = false;
 						break;
 					}
